@@ -8,19 +8,27 @@
 #ifndef Automat_H_
 #define Automat_H_
 
+#include "../../Scanner/includes/Token.h"
+
 class Automat {
 public:
+	// Methoden
 	Automat();
 	virtual ~Automat();
 	int identifyToken(char c);
 	int matrixAdministrator(int i, char c);
+	void trim(char* trimmed);
 	Token* getToken();
-	Token token;
-	char* flower;
+	char check(char c);
+
+	// Variablen
+	Token* token;
+	char flower[600];
 	int count;
 	int currentState;
-	int type;
-	char table[8][200];
+	char table[8][300];
+	int line;
+	int column;
 };
 
 #endif /* Automat_H_ */

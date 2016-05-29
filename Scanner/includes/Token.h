@@ -10,19 +10,17 @@
 
 class Token {
 public:
-	Token(char* i,int l, int c, int t, int z);
+	Token(char* i,int l, int c, int t);
 	virtual ~Token();
-	char* inhalt;
+	char* inhalt;//=> i im konstruktor
 	int line;
 	int column;
 	int type;
-	int zuruck;
 
-	int Token::getLine();
-	int Token::getColumn();
-	int Token::getType();
-	int Token::getZuruck();
-	char* Token::getInhalt();
+	int getLine();
+	int getColumn();
+	int getType();
+	char* getInhalt();
 };
 
 

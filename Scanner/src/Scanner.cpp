@@ -16,23 +16,53 @@ Scanner::Scanner(char* file) {
 }
 
 Scanner::~Scanner() {
-	delete[] automat;
-	delete[] buffer;
+	delete automat;
+	delete buffer;
 }
 
 Token* Scanner::nextToken(){
 	int ident = 0; // 0 damit er zu erst einmal in die schleife geet
-	while(ident == 0){ // ident<0 --> Token gefunden gehe ident zeichen zurück, iden = 0 noch ein Zeichen, ident=1 Token gefunden gehe keikn Zeichen zurück
-		ident = automat->identifyToken(buffer->getChar());
+	while(ident == 0){ // ident<0 --> Token gefunden gehe ident zeichen zurück, iden = 0 noch ein Zeichen, ident=1 Token gefunden gehe kein Zeichen zurück
+		char tmp = buffer->getChar();
+		ident = automat->identifyToken(tmp);
+		if(tmp == '\0'){
+			if(ident == 1){//Token gwfunden und gleich danach Terminator Symbol -> Alles Ok gleich aufhören
+				return automat->getToken();
+			}
+			if(ident == 0){//Noch ein Zeichen
+					return NULL;
+			}
+
+			if(ident<0){
+				for(int i = ident;i<-1;i++){ // geht nur hinein wenn ident <0 und der puffer auch somit zurück gehen muss
+					buffer->ungetChar();
+				}
+				return automat->getToken();
+			}
+		}
+
 		for(int i = ident;i<0;i++){ // geed nur herein wenn ident <0 und der puffer auch somit zurück gehen muss
 			buffer->ungetChar();
 		}
 	}
-
 	// TODO: Type des Tokens überprüfen und je nach type in die Symboltabelle eintragen
 
 
 	// Token in Symboltabelle geben falls es ein Ident ist und noch nicht vorhanden ist siehe Tafelbild von letztem mal auf mikes handy
 	Token* token = automat->getToken();
-	return token;
+
+	//std::cout<<token->getColumn() << " " << token->getInhalt()<<std::endl;
+	if(token->getType() == 12){
+		comment = true;
+	}else if(token->getType() == 14){
+		comment = false;
+		token = nextToken();
+	}
+
+	if(comment){
+		nextToken();
+	}else{
+		return token;
+	}
+
 }

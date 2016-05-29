@@ -6,5 +6,9 @@ int main(int argc, char **argv) {
 
 	symboltable = new Symboltable();
 
+	symboltable->initSymbols();
+	std::cout << symboltable->insert("while",1)<< std::endl;
+
+
 
 }

@@ -11,6 +11,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+
+
+
 
 // Konstruktor
 //
@@ -18,6 +23,7 @@ Buffer::Buffer(const char* file) {
 	// Öffnen der File
 	filedescriptor = open(file, O_DIRECT|O_SYNC);
 	index = 0;
+	buffer1 = NULL;
 	// Speicher allokieren für die Bufferfragmente
 	int err = posix_memalign((void**)&buffer1,512,513);
 	int err2 = posix_memalign((void**)&buffer2,512,513);
@@ -26,8 +32,9 @@ Buffer::Buffer(const char* file) {
 		cout << "Ups... du Depp:!!!! Sry" << endl;
 	}
 	// Buffer1 befüllen und Ende markieren
-	puffer_content = read(filedescriptor,buffer1,512);
-	buffer1[puffer_content] = '\0';
+	puffer_content1 = read(filedescriptor,buffer1,512);
+	puffer_content2 = 1;
+	buffer1[puffer_content1] = '\0';
 	rank = 0;
 	grenzeuebertreten = false;
 }
@@ -43,13 +50,14 @@ Buffer::~Buffer() {
 
 char Buffer::getChar(){
 	// Wenn nichts gelesen dann abbrechen
-	if(puffer_content <=0){
-		return  '\0';
+	if(puffer_content1 <= 0 || puffer_content2 <= 0){
+		return '\0';
 	}
 	// Lesen aus dem ersten Puffer
 	if(buffer1[index] != '\0' && rank == 0){
 		char c = buffer1[index];
 		index++;
+
 		return c;
 	}else{
 		// Lesen aus dem zweiten Puffer
@@ -64,12 +72,20 @@ char Buffer::getChar(){
 			if(grenzeuebertreten == false){
 				if(rank == 0){
 					// Befüllen Puffer mit Rank 1
-					puffer_content = read(filedescriptor,buffer2,512);
-					buffer2[puffer_content] = '\0';
+					if ((puffer_content2 = read(filedescriptor,buffer2,512)) <= 0){
+						//perror("buffer2 ");
+						errno=0;
+						buffer2[puffer_content2 = 0] = '\0';
+					} else
+						buffer2[puffer_content2] = '\0';
 				}else{ //rank == 1
 					// Befüllen Puffer mit Rank 0
-					puffer_content = read(filedescriptor,buffer1,512);
-					buffer1[puffer_content] = '\0';
+					if ((puffer_content1 = read(filedescriptor,buffer1,512)) <= 0){
+						//perror("buffer1 ");
+						errno=0;
+						buffer1[puffer_content1 = 0] = '\0';
+					} else
+						buffer1[puffer_content1] = '\0';
 				}
 				// Rang tauschen und erstes Zeichen des neuen Puffers ausgeben, da letztes zu schreibendes Zeichen '\0' war
 				rank = !rank;
@@ -88,8 +104,15 @@ void Buffer::ungetChar(){
 	// Wechsel in den vorherigen Buffer wenn man am Anfang des Buffer ist und zurück will
 	if(index == 0 && !grenzeuebertreten){
 		grenzeuebertreten = !grenzeuebertreten;
-		index = 511;
+		index = (rank == 0 ? puffer_content2-1 : puffer_content1-1);
 		rank = !rank;
+
+		if(puffer_content1 == 0){
+			puffer_content1++;
+		}else if(puffer_content2 == 0){
+			puffer_content2++;
+		}
+
 	}else if (index == 0 && grenzeuebertreten){
 		throw "Kann nicht weiter zurück gehen";		//Fehlermeldung
 	}else{

@@ -87,3 +87,11 @@ http://mrbook.org/blog/tutorials/make/
 http://de.wikipedia.org/wiki/Make
 
 http://www.sethi.org/classes/cet375/lab_notes/lab_04_makefile_and_compilation.html
+
+
+
+
+Hinweise von uns:
+
+- Wird irgendwo getInhalt() aufgerufen, oder eine andere get Funktion welche auf ein Token zugreift, dann auf NULL testen sonst kaputt!!
+  -> Wenn Token NULL dann EOF

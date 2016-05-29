@@ -19,6 +19,7 @@ public:
 	Automat* automat;
 	Buffer* buffer;
 	Token* nextToken();
+	bool comment = false;
 };
 
 #endif /* SCANNER_H_ */

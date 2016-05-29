@@ -18,7 +18,8 @@ public:
 	int index;
 	bool rank;
 	bool grenzeuebertreten;
-	int puffer_content;
+	//bool end = false;
+	int puffer_content1,puffer_content2;
 	char* buffer1;
 	char* buffer2;
 
