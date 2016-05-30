@@ -1,0 +1,22 @@
+:**12345
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
++  -  *  <  =  !  &  ;  :  (  )  {  }  [  ]
+1234.0
+12345.12E123
+12345.123E+123
+12345.12E-123
+
+
+print
+read
+printread
+readprint
+ABCDEFGHIJK$LMNOPQRSTUVWXYZ
+*:
+
+X:=3+4;
+:* eine einfach Aufgabe !! *:
+?y := 7 = := X : (X - 4);
+Z := ((3 + 4 - 6);
+Resultat := : X y %

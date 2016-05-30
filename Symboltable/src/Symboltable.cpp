@@ -6,12 +6,13 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "../includes/Symboltable.h"
 
 
 SymtabEntry::SymtabEntry(char* lex, SymtabEntry* next, int ttype){
-	this->lex = malloc(strlen(lex)+1);
+	this->lex = (char*)malloc(strlen(lex)+1);
 	strcpy(this->lex,lex);
 	this->next = next;
 	this->ttype = ttype;
@@ -26,6 +27,7 @@ SymtabEntry::~SymtabEntry() {
 
 Symboltable::Symboltable() {
 	bzero(this->tab,SYMTABSIZE*sizeof(SymtabEntry*));
+	initSymbols();
 
 	// TODO Auto-generated constructor stub
 }

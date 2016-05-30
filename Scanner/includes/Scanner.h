@@ -8,9 +8,11 @@
 #ifndef SCANNER_H_
 #define SCANNER_H_
 
+using namespace std;
 #include "Token.h"
 #include "../../Buffer/includes/Buffer.h"
 #include "../../Automat/includes/Automat.h"
+#include "../../Symboltable/includes/Symboltable.h"
 
 class Scanner {
 public:
@@ -18,6 +20,7 @@ public:
 	virtual ~Scanner();
 	Automat* automat;
 	Buffer* buffer;
+	Symboltable* symTab;
 	Token* nextToken();
 	bool comment = false;
 };

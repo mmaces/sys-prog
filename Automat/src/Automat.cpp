@@ -27,8 +27,8 @@ enum state {
 	state_equal,				// EZ gehe zuruck:-1 gebe -1 zurück
 	state_errorEqual,			// EZ gehe zuruck:-2 gebe -2 zurück
 	state_andAnd,			// EZ gehe zuruck:0 gebe 1 zurück
-	state_error,					//
-	state_firstError
+	state_error,					// (EZ)
+	state_firstError		// (EZ)
 } state;
 
 Automat::Automat() {
@@ -78,7 +78,7 @@ Automat::Automat() {
 	table[state_way2Id]['*'] = state_identifier;
 	table[state_way2Id]['='] = state_identifier;
 	table[state_way2Id][' '] = state_identifier;
-	table[state_way2Id]['$'] = state_error;
+	table[state_way2Id]['$'] = state_identifier;
 
 	table[state_way2Dig]['a'] = state_digit;
 	table[state_way2Dig]['0'] = state_way2Dig;
@@ -99,7 +99,7 @@ Automat::Automat() {
 	table[state_way2Dig]['*'] = state_digit;
 	table[state_way2Dig]['='] = state_digit;
 	table[state_way2Dig][' '] = state_digit;
-	table[state_way2Dig]['$'] = state_error;
+	table[state_way2Dig]['$'] = state_digit;
 
 	table[state_way2And]['a'] = state_errorAnd;
 	table[state_way2And]['0'] = state_errorAnd;
@@ -120,70 +120,70 @@ Automat::Automat() {
 	table[state_way2And]['*'] = state_errorAnd;
 	table[state_way2And]['='] = state_errorAnd;
 	table[state_way2And][' '] = state_errorAnd;
-	table[state_way2And]['$'] = state_error;
+	table[state_way2And]['$'] = state_errorAnd;
 
-	table[state_startDoubleDot]['a'] = ':';
-	table[state_startDoubleDot]['0'] = ':';
-	table[state_startDoubleDot]['+'] = ':';
-	table[state_startDoubleDot]['-'] = ':';
-	table[state_startDoubleDot]['<'] = ':';
-	table[state_startDoubleDot]['>'] = ':';
-	table[state_startDoubleDot]['!'] = ':';
-	table[state_startDoubleDot][';'] = ':';
-	table[state_startDoubleDot]['('] = ':';
-	table[state_startDoubleDot][')'] = ':';
-	table[state_startDoubleDot]['{'] = ':';
-	table[state_startDoubleDot]['}'] = ':';
-	table[state_startDoubleDot]['['] = ':';
-	table[state_startDoubleDot][']'] = ':';
-	table[state_startDoubleDot]['&'] = ':';
-	table[state_startDoubleDot][':'] = ':';
+	table[state_startDoubleDot]['a'] = state_doubleDot;
+	table[state_startDoubleDot]['0'] = state_doubleDot;
+	table[state_startDoubleDot]['+'] = state_doubleDot;
+	table[state_startDoubleDot]['-'] = state_doubleDot;
+	table[state_startDoubleDot]['<'] = state_doubleDot;
+	table[state_startDoubleDot]['>'] = state_doubleDot;
+	table[state_startDoubleDot]['!'] = state_doubleDot;
+	table[state_startDoubleDot][';'] = state_doubleDot;
+	table[state_startDoubleDot]['('] = state_doubleDot;
+	table[state_startDoubleDot][')'] = state_doubleDot;
+	table[state_startDoubleDot]['{'] = state_doubleDot;
+	table[state_startDoubleDot]['}'] = state_doubleDot;
+	table[state_startDoubleDot]['['] = state_doubleDot;
+	table[state_startDoubleDot][']'] = state_doubleDot;
+	table[state_startDoubleDot]['&'] = state_doubleDot;
+	table[state_startDoubleDot][':'] = state_doubleDot;
 	table[state_startDoubleDot]['*'] = state_doubleDotStar;
 	table[state_startDoubleDot]['='] = state_doubleDotEqual;
-	table[state_startDoubleDot][' '] = ':';
-	table[state_startDoubleDot]['$'] = state_error;
+	table[state_startDoubleDot][' '] = state_doubleDot;
+	table[state_startDoubleDot]['$'] = state_doubleDot;
 
-	table[state_startStar]['a'] = '*';
-	table[state_startStar]['0'] = '*';
-	table[state_startStar]['+'] = '*';
-	table[state_startStar]['-'] = '*';
-	table[state_startStar]['<'] = '*';
-	table[state_startStar]['>'] = '*';
-	table[state_startStar]['!'] = '*';
-	table[state_startStar][';'] = '*';
-	table[state_startStar]['('] = '*';
-	table[state_startStar][')'] = '*';
-	table[state_startStar]['{'] = '*';
-	table[state_startStar]['}'] = '*';
-	table[state_startStar]['['] = '*';
-	table[state_startStar][']'] = '*';
-	table[state_startStar]['&'] = '*';
+	table[state_startStar]['a'] = state_star;
+	table[state_startStar]['0'] = state_star;
+	table[state_startStar]['+'] = state_star;
+	table[state_startStar]['-'] = state_star;
+	table[state_startStar]['<'] = state_star;
+	table[state_startStar]['>'] = state_star;
+	table[state_startStar]['!'] = state_star;
+	table[state_startStar][';'] = state_star;
+	table[state_startStar]['('] = state_star;
+	table[state_startStar][')'] = state_star;
+	table[state_startStar]['{'] = state_star;
+	table[state_startStar]['}'] = state_star;
+	table[state_startStar]['['] = state_star;
+	table[state_startStar][']'] = state_star;
+	table[state_startStar]['&'] = state_star;
 	table[state_startStar][':'] = state_starDoubleDot;
-	table[state_startStar]['*'] = '*';
-	table[state_startStar]['='] = '*';
-	table[state_startStar][' '] = '*';
-	table[state_startStar]['$'] = state_error;
+	table[state_startStar]['*'] = state_star;
+	table[state_startStar]['='] = state_star;
+	table[state_startStar][' '] = state_star;
+	table[state_startStar]['$'] = state_star;
 
-	table[state_startEqual]['a'] = '=';
-	table[state_startEqual]['0'] = '=';
-	table[state_startEqual]['+'] = '=';
-	table[state_startEqual]['-'] = '=';
-	table[state_startEqual]['<'] = '=';
-	table[state_startEqual]['>'] = '=';
-	table[state_startEqual]['!'] = '=';
-	table[state_startEqual][';'] = '=';
-	table[state_startEqual]['('] = '=';
-	table[state_startEqual][')'] = '=';
-	table[state_startEqual]['{'] = '=';
-	table[state_startEqual]['}'] = '=';
-	table[state_startEqual]['['] = '=';
-	table[state_startEqual][']'] = '=';
-	table[state_startEqual]['&'] = '=';
+	table[state_startEqual]['a'] = state_equal;
+	table[state_startEqual]['0'] = state_equal;
+	table[state_startEqual]['+'] = state_equal;
+	table[state_startEqual]['-'] = state_equal;
+	table[state_startEqual]['<'] = state_equal;
+	table[state_startEqual]['>'] = state_equal;
+	table[state_startEqual]['!'] = state_equal;
+	table[state_startEqual][';'] = state_equal;
+	table[state_startEqual]['('] = state_equal;
+	table[state_startEqual][')'] = state_equal;
+	table[state_startEqual]['{'] = state_equal;
+	table[state_startEqual]['}'] = state_equal;
+	table[state_startEqual]['['] = state_equal;
+	table[state_startEqual][']'] = state_equal;
+	table[state_startEqual]['&'] = state_equal;
 	table[state_startEqual][':'] = state_startEqualDoubleDot;
-	table[state_startEqual]['*'] = '=';
-	table[state_startEqual]['='] = '=';
-	table[state_startEqual][' '] = '=';
-	table[state_startEqual]['$'] = state_error;
+	table[state_startEqual]['*'] = state_equal;
+	table[state_startEqual]['='] = state_equal;
+	table[state_startEqual][' '] = state_equal;
+	table[state_startEqual]['$'] = state_equal;
 
 	table[state_startEqualDoubleDot]['a'] = state_errorEqual;
 	table[state_startEqualDoubleDot]['0'] = state_errorEqual;
@@ -204,7 +204,7 @@ Automat::Automat() {
 	table[state_startEqualDoubleDot]['*'] = state_errorEqual;
 	table[state_startEqualDoubleDot]['='] = state_equalDoubleDotEqual;
 	table[state_startEqualDoubleDot][' '] = state_errorEqual;
-	table[state_startEqualDoubleDot]['$'] = state_error;
+	table[state_startEqualDoubleDot]['$'] = state_errorEqual;
 
 	//in flower sind alle Übergebenen Chars
 	count = 0;
@@ -252,6 +252,10 @@ int Automat::identifyToken(char c){
 		// Anderen Fälle in denen es 2 Möglichkeiten gibt ein Token zu erkennen, immer 1 zurück, wenn das zweite Zeichen falsch ist
 		}else{
 			number = -1;
+		}
+
+		if(number == -2){ // Das state_errorEqual dient oben nur zur erkennung und soll dann trotzdem nur ein = ausgeben
+			currentState = state_equal;
 		}
 
 		//falls man zeichen zurück gehen muss , muss man das auch in flower machen

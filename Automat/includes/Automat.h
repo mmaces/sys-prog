@@ -8,6 +8,8 @@
 #ifndef Automat_H_
 #define Automat_H_
 
+using namespace std;
+
 #include "../../Scanner/includes/Token.h"
 
 class Automat {

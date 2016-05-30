@@ -11,17 +11,3 @@ Token::~Token() {
 
 }
 
-int Token::getLine(){
-	return line;
-}
-
-int Token::getColumn(){
-	return column;
-}
-int Token::getType(){
-	return type;
-}
-char* Token::getInhalt(){
-	return inhalt;
-}
-

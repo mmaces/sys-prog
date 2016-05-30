@@ -7,14 +7,14 @@
 
 #ifndef SYMBOLTABLE_H_
 #define SYMBOLTABLE_H_
-
+using namespace std;
 
 #define SYMTABSIZE 1025
 
 class SymtabEntry{
 public:
 	SymtabEntry(char* lex, SymtabEntry* next, int ttype);
-	virtual ~SymtabEnty();
+	virtual ~SymtabEntry();
 	char* lex;
 	SymtabEntry* next;
 	int ttype;

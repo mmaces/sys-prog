@@ -1,4 +1,8 @@
 #include "../includes/Symboltable.h"
+#include <iostream>
+#include <stdio.h>
+
+
 
 int main(int argc, char **argv) {
 
@@ -7,8 +11,6 @@ int main(int argc, char **argv) {
 	symboltable = new Symboltable();
 
 	symboltable->initSymbols();
-	std::cout << symboltable->insert("while",1)<< std::endl;
-
-
-
+	cout << (symboltable->insert("while",1)->lex) << endl;
+	cout << (symboltable->insert("UI",1)->lex) << endl;
 }

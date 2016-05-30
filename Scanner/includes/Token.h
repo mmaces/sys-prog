@@ -16,11 +16,6 @@ public:
 	int line;
 	int column;
 	int type;
-
-	int getLine();
-	int getColumn();
-	int getType();
-	char* getInhalt();
 };
 
 
