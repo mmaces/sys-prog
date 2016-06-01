@@ -7,6 +7,8 @@
 
 #ifndef BUFFER_INCLUDES_TOKEN_H_
 #define BUFFER_INCLUDES_TOKEN_H_
+#include "../../Symboltable/includes/Symboltable.h"
+
 
 class Token {
 public:
@@ -16,6 +18,11 @@ public:
 	int line;
 	int column;
 	int type;
+	SymtabEntry* symTab = 0;
+
+	void setSymTab(SymtabEntry* symTab);
+
+
 };
 
 

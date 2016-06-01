@@ -158,7 +158,7 @@ Automat::Automat() {
 	table[state_startStar]['['] = state_star;
 	table[state_startStar][']'] = state_star;
 	table[state_startStar]['&'] = state_star;
-	table[state_startStar][':'] = state_starDoubleDot;
+	table[state_startStar][':'] = (comment ? state_starDoubleDot : state_star);
 	table[state_startStar]['*'] = state_star;
 	table[state_startStar]['='] = state_star;
 	table[state_startStar][' '] = state_star;
@@ -212,7 +212,7 @@ Automat::Automat() {
 	line = 1;
 	column = 0;
 
-	for(int i=0; i<600;i++){
+	for(int i=0; i<1025;i++){
 		flower[i] = '\0';
 	}
 }
@@ -223,9 +223,20 @@ Automat::~Automat() {
 int Automat::identifyToken(char c){
 	int number = 0;
 
+	if(currentState == 12){
+		comment = true;
+	}
+
 	// Aktuelles Zeichen zwischenspeichern
 	flower[count] = c;
  	count++;
+
+
+ 	/* #PUNKTE: Wenn Punkte fehlen dann, wenn > 1025 fehler Flag setzen und bis zum ende gehen, dann verwerfen
+ 	if (count >= 595){
+ 		count = 0;
+ 	}
+ 	*/
 
  	column++;
 
@@ -272,8 +283,11 @@ int Automat::identifyToken(char c){
 		if(d == -1){
 			d = 0;
 		}
-		token = new Token(flower,line,column - (d - ((number == 1)? 0 : number) - ((currentState == 12 || currentState == 14)? 2 : 0)),currentState); //d und number sind korrekturfaktoren -> number addieren wenn schritt(e) zurück
 
+		token = new Token(flower,line,column - (d - ((number == 1)? 0 : number) - ((currentState == 12 || currentState == 14)? 2 : 0)),currentState); //d und number sind korrekturfaktoren -> number addieren wenn schritt(e) zurück
+		if(currentState == state_doubleDotStar){
+			comment = false;
+		}
 		count = 0;
 		currentState = 0;
 	}

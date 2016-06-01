@@ -95,3 +95,7 @@ Hinweise von uns:
 
 - Wird irgendwo getInhalt() aufgerufen, oder eine andere get Funktion welche auf ein Token zugreift, dann auf NULL testen sonst kaputt!!
   -> Wenn Token NULL dann EOF
+
+  
+  
+  Wenn Punkte fehlen: Suche #PUNKTE

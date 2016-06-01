@@ -25,12 +25,13 @@ public:
 
 	// Variablen
 	Token* token;
-	char flower[600];
+	char flower[1025];
 	int count;
 	int currentState;
 	char table[8][300];
 	int line;
 	int column;
+	bool comment = false;
 };
 
 #endif /* Automat_H_ */

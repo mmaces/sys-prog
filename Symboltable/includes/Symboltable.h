@@ -9,7 +9,7 @@
 #define SYMBOLTABLE_H_
 using namespace std;
 
-#define SYMTABSIZE 1025
+#define SYMTABSIZE 2025
 
 class SymtabEntry{
 public:
@@ -29,7 +29,7 @@ private:
 public:
 	Symboltable();
 	virtual ~Symboltable();
-	SymtabEntry* insert(char* lexem, int ttype);
+	SymtabEntry* insert(char* lexem);
 	void initSymbols();
 };
 

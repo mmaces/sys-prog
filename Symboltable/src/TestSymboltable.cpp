@@ -11,6 +11,6 @@ int main(int argc, char **argv) {
 	symboltable = new Symboltable();
 
 	symboltable->initSymbols();
-	cout << (symboltable->insert("while",1)->lex) << endl;
-	cout << (symboltable->insert("UI",1)->lex) << endl;
+	cout << (symboltable->insert("while")->lex) << endl;
+	cout << (symboltable->insert("UI")->lex) << endl;
 }

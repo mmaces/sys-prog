@@ -29,7 +29,9 @@ int main(int argc, char **argv) {
 	} state;
 
 	char* array[255];
-
+	array[1] = "Keyword While";
+	array[2] = "Keyword If";
+	array[3] = "Identifier";
 	array[8] = "Identifier";
 	array[9] = "Digit";
 	array[11] = "DoubleDot";
@@ -67,7 +69,12 @@ int main(int argc, char **argv) {
 			|| t->type == '}')){
 			t = scanner->nextToken();
 		}
-		fs << "Token " << setw(20)<< left<< array[t->type] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+		if(t->type==8){
+			fs << "Token " << setw(20)<< left<< array[t->symTab->ttype] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+		}else{
+			fs << "Token " << setw(20)<< left<< array[t->type] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+		}
+
 		if(t->type == 8){ // Bei identifiernoch lexem anfügen
 			fs << "Lexem: " << t->inhalt <<endl;
 		}else if(t->type == 9){
@@ -76,9 +83,13 @@ int main(int argc, char **argv) {
 			fs<<endl;
 		}
 		t = scanner->nextToken();
-
 	}
-	fs << "Token " << setw(20)<< left<< array[t->type] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+
+	if(t->type==8){
+		fs << "Token " << setw(20)<< left<< array[t->symTab->ttype] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+	}else{
+		fs << "Token " << setw(20)<< left<< array[t->type] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+	}
 
 	if(t->type == 8){
 		fs << "Lexem: " << t->inhalt <<endl;
@@ -89,5 +100,6 @@ int main(int argc, char **argv) {
 	}
 	fs.close();
 	delete scanner;
-}
+	}
+
 

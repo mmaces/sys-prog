@@ -7,16 +7,16 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "../includes/Symboltable.h"
 
 
-SymtabEntry::SymtabEntry(char* lex, SymtabEntry* next, int ttype){
+SymtabEntry::SymtabEntry(char* lex, SymtabEntry* next,int ttype){
 	this->lex = (char*)malloc(strlen(lex)+1);
 	strcpy(this->lex,lex);
 	this->next = next;
 	this->ttype = ttype;
-
 }
 
 SymtabEntry::~SymtabEntry() {
@@ -43,10 +43,10 @@ unsigned int Symboltable::hash(char* lex){
 }
 
 void Symboltable::initSymbols(){
-	insert("while", 1);
-	insert("WHILE", 1);
-	insert("if", 2);
-	insert("IF", 2);
+	insert("while");
+	insert("WHILE");
+	insert("if");
+	insert("IF");
 
 }
 
@@ -55,7 +55,7 @@ Symboltable::~Symboltable() {
 	delete[] tab;
 }
 
-SymtabEntry* Symboltable::insert(char* lexem, int ttype){
+SymtabEntry* Symboltable::insert(char* lexem){
 	unsigned int hash = this->hash(lexem);
 	SymtabEntry* current = this->tab[hash];
 	while (current){
@@ -63,6 +63,13 @@ SymtabEntry* Symboltable::insert(char* lexem, int ttype){
 			current = current->next;
 		else
 			return current;
+	}
+
+	int ttype = 3;
+	if(!(strcmp(lexem, "if")&&strcmp(lexem,"IF"))){
+		ttype = 2;
+	}else if(!(strcmp(lexem, "while")&&strcmp(lexem,"WHILE"))){
+		ttype = 1;
 	}
 	this->tab[hash] = current = new SymtabEntry(lexem,this->tab[hash], ttype);
 	return current;

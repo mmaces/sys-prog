@@ -52,20 +52,20 @@ Token* Scanner::nextToken(){
 
 	// Token in Symboltabelle geben falls es ein Ident ist und noch nicht vorhanden ist siehe Tafelbild von letztem mal auf mikes handy
 	Token* token = automat->getToken();
-	if(token->type == 8){ // 8 Entspricht dem Zustand identifier im Automat
-		if(token->inhalt != "while" || token->inhalt != "WHILE" || token->inhalt != "if" || token->inhalt != "IF"){
-			symTab->insert(token->inhalt,token->type);
-		}
 
+	if(token->type == 8){ // 8 Entspricht dem Zustand identifier im Automat
+		token->setSymTab(symTab->insert(token->inhalt));
 	}
 
 	//std::cout<<token->getColumn() << " " << token->getInhalt()<<std::endl;
 	if(token->type == 12){
 		comment = true;
-	}else if(token->type == 14){
+	}else if(token->type == 14 && comment){
 		comment = false;
 		token = nextToken();
 	}
+
+	// Kommentare überspringen
 
 	if(comment){
 		nextToken();

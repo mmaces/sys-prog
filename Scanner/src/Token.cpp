@@ -11,3 +11,9 @@ Token::~Token() {
 
 }
 
+void Token::setSymTab(SymtabEntry* symTab){
+	this->symTab = symTab;
+
+
+}
+
