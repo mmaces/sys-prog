@@ -99,3 +99,6 @@ Hinweise von uns:
   
   
   Wenn Punkte fehlen: Suche #PUNKTE
+  
+  Aufgaben:
+  - Auf int casten um führende 0 zu vermeiden
