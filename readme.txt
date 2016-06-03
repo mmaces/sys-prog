@@ -102,3 +102,4 @@ Hinweise von uns:
   
   Aufgaben:
   - Auf int casten um führende 0 zu vermeiden
+  - Fehler auf stderr ausgeben
