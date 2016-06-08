@@ -70,6 +70,13 @@ Token* Scanner::nextToken(){
 	if(comment){
 		nextToken();
 	}else{
+		while(!(token->type == 8 || token->type == 9|| token->type == 11|| token->type == 12|| token->type == 13|| token->type == 14|| token->type == 15
+				|| token->type == 16|| token->type == 17|| token->type == 19|| token->type == '+'|| token->type == '-'|| token->type == '<'|| token->type == '>'
+				|| token->type == '!'|| token->type == ';'|| token->type == '('|| token->type == ')'|| token->type == '['|| token->type == ']'|| token->type == '{'
+				|| token->type == '}')){
+				cout<<"Fehlerzeichen: " <<token->inhalt << " in Linie: "<< token->line<<" und Spalte: "<< token->column<<endl;
+				token = nextToken();
+		}
 		return token;
 	}
 

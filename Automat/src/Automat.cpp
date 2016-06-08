@@ -15,7 +15,7 @@ enum state {
 	state_startStar,
 	state_startEqual,
 	state_startEqualDoubleDot,
-	state_identifier,	// EZ gehe zuruck:-1 gebe -1 zurück
+	state_identifier,	// EZ gehe zuruck:-1 gebe -1 zurück   identifier->DECL->DECLS
 	state_digit,		// EZ gehe zuruck:-1 gebe -1 zurück
 	state_errorAnd,		// EZ gehe zuruck:-1 gebe -1 zurück
 	state_doubleDot,	// EZ gehe zuruck:-1 gebe -1 zurück
@@ -158,7 +158,7 @@ Automat::Automat() {
 	table[state_startStar]['['] = state_star;
 	table[state_startStar][']'] = state_star;
 	table[state_startStar]['&'] = state_star;
-	table[state_startStar][':'] = (comment ? state_starDoubleDot : state_star);
+	table[state_startStar][':'] = state_star; // In MAtrixAdmin wird es verändert
 	table[state_startStar]['*'] = state_star;
 	table[state_startStar]['='] = state_star;
 	table[state_startStar][' '] = state_star;
@@ -223,9 +223,9 @@ Automat::~Automat() {
 int Automat::identifyToken(char c){
 	int number = 0;
 
-	if(currentState == 12){
+	/*if(currentState == 12){
 		comment = true;
-	}
+	}*/
 
 	// Aktuelles Zeichen zwischenspeichern
 	flower[count] = c;
@@ -285,8 +285,11 @@ int Automat::identifyToken(char c){
 		}
 
 		token = new Token(flower,line,column - (d - ((number == 1)? 0 : number) - ((currentState == 12 || currentState == 14)? 2 : 0)),currentState); //d und number sind korrekturfaktoren -> number addieren wenn schritt(e) zurück
-		if(currentState == state_doubleDotStar){
+		if(currentState == state_starDoubleDot){
 			comment = false;
+		}
+		if(currentState == state_doubleDotStar){
+			comment = true;
 		}
 		count = 0;
 		currentState = 0;
@@ -318,7 +321,21 @@ int Automat::matrixAdministrator(int currentState, char ch){
 	}else if(ch == '\n' || ch == ' ' || ch == '\f' || ch == '\t' || ch == '\v'){
 		ch = ' ';
 	}
-	return table[currentState][ch];
+/*
+	if(currentState == state_startStar){
+		if(comment){
+			currentState = state_starDoubleDot;
+		}
+	}else{
+		currentState = table[currentState][ch];
+	}
+
+	currentState = comment?state_starDoubleDot:currentState;
+
+
+	return  currentState;
+*/
+	return ((comment && (currentState == state_startStar))? state_starDoubleDot :table[currentState][ch]);
 }
 
 void Automat::trim(char* trimmed){

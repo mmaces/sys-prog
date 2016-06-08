@@ -63,12 +63,7 @@ int main(int argc, char **argv) {
 	fstream fs("out.txt", ios::out);
 	Token* t = scanner->nextToken();
 	while(t != NULL){
-		while(!(t->type == 8 || t->type == 9|| t->type == 11|| t->type == 12|| t->type == 13|| t->type == 14|| t->type == 15
-			|| t->type == 16|| t->type == 17|| t->type == 19|| t->type == '+'|| t->type == '-'|| t->type == '<'|| t->type == '>'
-			|| t->type == '!'|| t->type == ';'|| t->type == '('|| t->type == ')'|| t->type == '['|| t->type == ']'|| t->type == '{'
-			|| t->type == '}')){
-			t = scanner->nextToken();
-		}
+
 		if(t->type==8){
 			fs << "Token " << setw(20)<< left<< array[t->symTab->ttype] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
 		}else{
