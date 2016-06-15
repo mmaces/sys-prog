@@ -1,6 +1,3 @@
-?Hallo *: dies ist ein Test :* :*
-
-aihcasjihdf *:
-
-?
-ahgds   544 
+int[8] c;
+int[4] d;
+int[] a;

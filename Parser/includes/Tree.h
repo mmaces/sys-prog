@@ -8,10 +8,10 @@
 #ifndef SRC_TREE_H_
 #define SRC_TREE_H_
 
-class Tree{
-public:
-	Tree();
-};
+//class Tree{
+//public:
+//	Tree(Token token, Decls decl, Statements statements);
+//};
 
 
 

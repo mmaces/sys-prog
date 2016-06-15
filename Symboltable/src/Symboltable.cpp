@@ -47,7 +47,10 @@ void Symboltable::initSymbols(){
 	insert("WHILE");
 	insert("if");
 	insert("IF");
-
+	insert("write");  // ttype 4
+	insert("read");	  // ttype 5
+	insert("else");	  // ttype 6
+	insert("int");	  // ttype 7
 }
 
 
@@ -70,7 +73,16 @@ SymtabEntry* Symboltable::insert(char* lexem){
 		ttype = 2;
 	}else if(!(strcmp(lexem, "while")&&strcmp(lexem,"WHILE"))){
 		ttype = 1;
+	}else if(!(strcmp(lexem, "write"))){
+		ttype = 4;
+	}else if(!(strcmp(lexem, "read"))){
+		ttype = 5;
+	}else if(!(strcmp(lexem, "else"))){
+		ttype = 6;
+	}else if(!(strcmp(lexem, "int"))){
+		ttype = 7;
 	}
+
 	this->tab[hash] = current = new SymtabEntry(lexem,this->tab[hash], ttype);
 	return current;
 }

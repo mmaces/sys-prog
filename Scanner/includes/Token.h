@@ -21,8 +21,6 @@ public:
 	SymtabEntry* symTab = 0;
 
 	void setSymTab(SymtabEntry* symTab);
-
-
 };
 
 
