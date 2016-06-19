@@ -1,6 +1,10 @@
 #include "../includes/Scanner.h"
 #include <fstream>
 #include <iomanip>
+#include <cstdlib>
+#include <cerrno>
+#include <cstdio>
+
 int main(int argc, char **argv) {
 
 	enum state {
@@ -29,9 +33,13 @@ int main(int argc, char **argv) {
 	} state;
 
 	char* array[255];
-	array[1] = "Keyword While";
-	array[2] = "Keyword If";
+	array[1] = "Keyword while";
+	array[2] = "Keyword if";
 	array[3] = "Identifier";
+	array[4] = "Keyword write";
+	array[5] = "Keyword read";
+	array[6] = "Keyword else";
+	array[7] = "Keyword int";
 	array[8] = "Identifier";
 	array[9] = "Digit";
 	array[11] = "DoubleDot";
@@ -62,21 +70,33 @@ int main(int argc, char **argv) {
 
 	fstream fs("out.txt", ios::out);
 	Token* t = scanner->nextToken();
+
+
+
 	while(t != NULL){
+		long int converted_long = strtol(t->inhalt,NULL,10);
 
-		if(t->type==8){
-			fs << "Token " << setw(20)<< left<< array[t->symTab->ttype] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
-		}else{
-			fs << "Token " << setw(20)<< left<< array[t->type] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+		if(errno != ERANGE && t->column <5000){
+			if(t->type==8){
+				fs << "Token " << setw(20)<< left<< array[t->symTab->ttype] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+			}else{
+				fs << "Token " << setw(20)<< left<< array[t->type] << " Line: " << setw(7)<<t->line<< " Column: " << setw(7)<< t->column;
+			}
+
+			if(t->type == 8){ // Bei identifiernoch lexem anfügen
+				fs << "Lexem: " << t->inhalt <<endl;
+			}else if(t->type == 9){
+				fs << "Value: " << converted_long <<endl;
+			}else{
+				fs<<endl;
+			}
+		}else if(errno == ERANGE){
+			fprintf(stderr,"Bereichsüberschreitung: %s in Zeile: %d und Spalte: %d\n",t->inhalt,t->line,t->column);
+			errno = 0;
+		}else if(t->column >=5000){
+			fprintf(stderr,"Zeile: %d ist zu lang um verarbeitet zu werden!!\n",t->line);
 		}
 
-		if(t->type == 8){ // Bei identifiernoch lexem anfügen
-			fs << "Lexem: " << t->inhalt <<endl;
-		}else if(t->type == 9){
-			fs << "Value: " << t->inhalt <<endl;
-		}else{
-			fs<<endl;
-		}
 		t = scanner->nextToken();
 	}
 

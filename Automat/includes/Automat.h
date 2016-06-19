@@ -25,7 +25,7 @@ public:
 
 	// Variablen
 	Token* token;
-	char flower[1025];
+	char flower[5000];
 	int count;
 	int currentState;
 	char table[8][300];

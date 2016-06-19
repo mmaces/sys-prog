@@ -212,7 +212,7 @@ Automat::Automat() {
 	line = 1;
 	column = 0;
 
-	for(int i=0; i<1025;i++){
+	for(int i=0; i<4999;i++){
 		flower[i] = '\0';
 	}
 }
@@ -335,7 +335,7 @@ int Automat::matrixAdministrator(int currentState, char ch){
 
 	return  currentState;
 */
-	return ((comment && (currentState == state_startStar))? state_starDoubleDot :table[currentState][ch]);
+	return ((comment && (currentState == state_startStar) && (ch == ':'))? state_starDoubleDot :table[currentState][ch]);
 }
 
 void Automat::trim(char* trimmed){

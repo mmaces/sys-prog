@@ -6,6 +6,7 @@
  */
 
 #include "../includes/Scanner.h"
+#include <cstdio>
 //#include "../../Automat/includes/Automat.h"
 //#include "../../Buffer/includes/Buffer.h"
 //#include "../includes/Token.h"
@@ -73,8 +74,8 @@ Token* Scanner::nextToken(){
 		while(!(token->type == 8 || token->type == 9|| token->type == 11|| token->type == 12|| token->type == 13|| token->type == 14|| token->type == 15
 				|| token->type == 16|| token->type == 17|| token->type == 19|| token->type == '+'|| token->type == '-'|| token->type == '<'|| token->type == '>'
 				|| token->type == '!'|| token->type == ';'|| token->type == '('|| token->type == ')'|| token->type == '['|| token->type == ']'|| token->type == '{'
-				|| token->type == '}')){
-				cout<<"Fehlerzeichen: " <<token->inhalt << " in Linie: "<< token->line<<" und Spalte: "<< token->column<<endl;
+				|| token->type == '}') && token->column <5000){
+				fprintf(stderr,"Fehlerzeichen: %s in Zeile: %d und Spalte: %d\n",token->inhalt,token->line,token->column);
 				token = nextToken();
 		}
 		return token;
