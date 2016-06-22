@@ -40,7 +40,8 @@ Token* Scanner::nextToken(){
 				for(int i = ident;i<-1;i++){ // geht nur hinein wenn ident <0 und der puffer auch somit zurück gehen muss
 					buffer->ungetChar();
 				}
-				return automat->getToken();
+				this->token = automat->getToken();
+				return this->token;
 			}
 		}
 
@@ -78,7 +79,26 @@ Token* Scanner::nextToken(){
 				fprintf(stderr,"Fehlerzeichen: %s in Zeile: %d und Spalte: %d\n",token->inhalt,token->line,token->column);
 				token = nextToken();
 		}
+		this->token = token;
 		return token;
 	}
 
+}
+
+void Scanner::ungetToken(Token* tk){
+	for(int i = getTokenSize(tk);i>0;i--){
+		buffer->ungetChar();
+	}
+}
+
+int Scanner::getTokenSize(Token* tk){
+	int size = 0;
+	char* inhalt = tk->inhalt;
+	int i = 0;
+	while(inhalt[i] != '\0'){
+		  i++;
+		  size++;
+		  cout << "Size: " << size << endl;
+	 }
+	return size;
 }

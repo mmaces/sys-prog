@@ -12,6 +12,7 @@ class ParserTest {
 public:
 	ParserTest();
 	virtual ~ParserTest();
+
 };
 
 #endif /* SRC_PARSERTEST_H_ */

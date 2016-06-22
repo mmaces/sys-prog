@@ -7,5 +7,9 @@
 #include "../includes/Parser.h"
 int main(int argc, char **argv) {
 	Parser* parser = new Parser(argv[1]);
-	parser->parse();
+	int a = parser->parse();
+	if(a == -1){
+		return -1;
+	}
+	cout << "... done!" << endl;
 }

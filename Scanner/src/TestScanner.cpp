@@ -71,8 +71,6 @@ int main(int argc, char **argv) {
 	fstream fs("out.txt", ios::out);
 	Token* t = scanner->nextToken();
 
-
-
 	while(t != NULL){
 		long int converted_long = strtol(t->inhalt,NULL,10);
 
@@ -113,8 +111,7 @@ int main(int argc, char **argv) {
 	}else{
 		fs<<endl;
 	}
+
 	fs.close();
 	delete scanner;
 	}
-
-

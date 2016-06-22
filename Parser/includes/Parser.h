@@ -17,7 +17,7 @@ class Parser{
 public:
 	// Konstruktoren
 	Parser(char* file);
-    void parse();
+    int parse();
 	Scanner* scanner;
 };
 
@@ -41,7 +41,7 @@ public:
 	Token* token;
 	Decls* decls;
 	Statements* statements;
-	bool exists = false;
+	int status = 0; //-1 Existent mit Fehler | 0 leer((e) Menge) | 1 Existent ohne Fehler
 };
 
 class Decls{
@@ -50,22 +50,22 @@ public:
 	Token* token;
 	Decls* decls;
 	Decl* decl;
-	bool exists = false;
+	int status = 0;
 };
 
 class Decl{
 public:
 	Decl(Scanner* scanner);
-	Token* token;
 	Array* array;
-	bool exists = false;
+	Token* token;
+	int status = 0;
 };
 
 class Array{
 public:
 	Array(Scanner* scanner);
 	Token* token;
-	bool exists = false;
+	int status = 0;
 };
 
 class Statements{
@@ -74,7 +74,7 @@ public:
 	Token* token;
 	Statement* statement;
 	Statements* statements;
-	bool exists = false;
+	int status = 0;
 };
 
 class Statement{
@@ -85,7 +85,9 @@ public:
 	Exp* exp;
 	Statements* statements;
 	Statement* statement;
-	bool exists = false;
+	Statement* statement2;
+	bool beginWithCurrentToken = false;
+	int status = 0;
 };
 
 class Exp{
@@ -94,7 +96,7 @@ public:
 	Token* token;
 	Exp2* exp2;
 	Op_exp* op_exp;
-	bool exists = false;
+	int status = 0;
 };
 
 class Exp2{
@@ -104,7 +106,7 @@ public:
 	Exp* exp;
 	Index* index;
 	Exp2* exp2;
-	bool exists = false;
+	int status = 0;
 };
 
 class Index{
@@ -112,7 +114,8 @@ public:
 	Index(Scanner* scanner);
 	Token* token;
 	Exp* exp;
-	bool exists = false;
+	int status = 0;
+	bool isOperandOrDDE(Token* tk);
 };
 
 class Op_exp{
@@ -121,14 +124,15 @@ public:
 	Token* token;
 	Op* op;
 	Exp* exp;
-	bool exists = false;
+	int status = 0;
 };
 
 class Op{
 public:
 	Op(Scanner* scanner);
 	Token* token;
-	bool exists = false;
+	int status = 0;
+	bool isOperand(Token* tk);
 };
 
 #endif /* INCLUDES_PARSER_H_ */

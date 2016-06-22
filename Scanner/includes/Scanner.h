@@ -23,6 +23,9 @@ public:
 	Symboltable* symTab;
 	Token* nextToken();
 	bool comment = false;
+	int getTokenSize(Token* tk);
+	Token* token;
+	void ungetToken(Token* tk);
 };
 
 #endif /* SCANNER_H_ */
