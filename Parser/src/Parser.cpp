@@ -1,15 +1,32 @@
 #include "../includes/Parser.h"
+#include <cstdlib>
 
-
+enum varType{
+	noType,
+	intType,
+	intArrayType,
+	arrayType,
+	opPlus,
+	opMinus,
+	opMult,
+	opDiv,
+	opLess,
+	opGreater,
+	opEqual,
+	opUnEqual,
+	opAndAnd,
+	errorType
+} vType;
 
 Parser::Parser(char* file){
 	scanner = new Scanner(file);
+	prog = new Prog(scanner);
 };
 
 int Parser::parse(){
 	try{
 		cout << "Parsing..." << endl;
-		Prog* prog = new Prog(scanner);
+
 		if(prog->status == -1){
 			throw -1;
 		}
@@ -21,11 +38,54 @@ int Parser::parse(){
 	{
 		return -1;
 	}
-
-
-
 }
 
+void Parser::typeCheckProg(Prog* prog){
+	cout << "PROG typecheck begin" << endl;
+	typeCheckDecls(prog->decls);
+	//typeCheckStatements(prog->statements);
+	prog->type = noType;
+}
+
+void Parser::typeCheckDecl(Decl* decl){
+	typeCheckArray(decl->array);
+	if(decl->token->symTab->varType!=noType){ // Vielleicht flasch?
+		cerr<<"identifier already defined"<< endl;
+		decl->status = errorType;
+	}else if(decl->array->type == errorType){
+		decl->type = errorType;
+	}else{
+		decl->type = noType;
+		if(decl->array->type == arrayType){
+			decl->token->symTab->varType = intArrayType;
+		}else{
+			decl->token->symTab->varType = intType;
+		}
+	}
+	cout << "typecheck: identifier " << decl->token->inhalt<<" array integer: " << strtol(decl->array->token->inhalt,NULL,10) <<endl;
+}
+
+void Parser::typeCheckDecls(Decls* decls){
+	if(decls->status != 0){
+		typeCheckDecl(decls->decl);
+		typeCheckDecls(decls->decls);
+	}
+	decls->type = noType;
+}
+
+void Parser::typeCheckArray(Array* array){
+
+	if(array->status != 0){
+		if(strtol(array->token->inhalt,NULL,10) >0){
+			array->type = arrayType;
+		}else{
+			cerr<<"no valid dimension"<<endl;
+			array->type = errorType;
+		}
+	}else{
+		array->type = noType;
+	}
+}
 
 Prog::Prog(Scanner* scanner){
 //TODO: read write nur klein ?
@@ -34,12 +94,11 @@ Prog::Prog(Scanner* scanner){
 		if(this->decls->status == -1){	//Wenn DECLS fehlerhaft
 			throw -1;
 		}
-		else if(this->decls->status == 0){	//Wenn DECLS leer oder erstes Token kein int
-			this->decls == NULL;
-		}
+
 		if(this->decls->decl->status == 1){	//Wenn DECLS bzw. DECL vorhanden
 			cout << "DECLS" << endl;
 		}
+
 		cout << "Beginne mit Statements mit Tokeninhalt " << scanner->token->inhalt << endl;
 		this->statements = new Statements(scanner);
 		if(this->statements->status == -1){
@@ -64,35 +123,24 @@ Decls::Decls(Scanner* scanner) {
 		this->decl = new Decl(scanner);
 		if(this->decl->status == -1){	//Wenn DECL fehlerhaft
 			throw -1;
-		}
-		else if(this->decl->status == 1){	//Wenn DECL vorhanden
+		}else if(this->decl->status == 1){	//Wenn DECL vorhanden
 			this->token = scanner->nextToken();
 			if(this->token->type == ';'){
 				this->decls = new Decls(scanner);
-				if(this->decls->status == 0){
-					this->decls == NULL;
-				}
-				else if(this->decls->status == -1){
-					throw -1;
-				}
-				else{
-					this->status = 1;
-					cout << "DECLS" << endl;
-				}
-			}
-			else{
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+			}else if(this->decls->status == -1){
+				cerr<<"Unexpected token in line: " <<this->token->line <<" column: "<<this->token->column <<" "<< this->token->type <<endl;
 				throw -1;
+			}else{
+				this->status = 1;
+				cout << "DECLS" << endl;
 			}
-		}
-		else{	//Wenn DECL leer bzw. Programm nicht mit int anfängt
+		}else{	//Wenn DECL leer bzw. Programm nicht mit int anfängt
 			this->status = 0;
 			this->decl = NULL;
+			this->token = scanner->token;
 			scanner->ungetToken(this->token);	//DANGER ->geht vor erstes Token -> Dateianfang
 		}
-	}
-	catch(int f)
-	{
+	}catch(int f){
 		this->status = -1;
 	}
 
@@ -109,14 +157,19 @@ Decl::Decl(Scanner* scanner) {
 //		scanner->ungetToken();
 //		this->token = scanner->nextToken();
 //		cout << "Tokeninhalt: " << this->token->inhalt << endl;
-		if (this->token->symTab->ttype == 7){ //Wenn Token/Schlüsselwort int
+		if (this->token->type == 8 && this->token->symTab->ttype == 7){ //Wenn Token/Schlüsselwort int
 			this->array = new Array(scanner);
 			if (this->array->status == 1 || this->array->status == 0){ //Wenn ARRAY vorhanden oder leer
 				this->token = scanner->nextToken();
-				if (this->array->status == 0){	//Wenn ARRAY leer
-					this->array = NULL;
-				}
-				if (this->token->symTab->ttype == 3 /*identifier*/){
+
+				if (this->token->type == 8 && this->token->symTab->ttype == 3 /*identifier*/){	//Wenn identifier in Tokentype und symtab
+					this->token = scanner->token;
+					if(this->array == NULL){
+						this->token->symTab->varType = intType;
+					}
+					else{
+						this->token->symTab->varType = intArrayType;
+					}
 					this->status = 1;
 					cout << "DECL" << endl;
 				}
@@ -144,9 +197,11 @@ Array::Array(Scanner* scanner) {
 		if (this->token->type == '['){	//Eckige Klammer auf muss zuerst da sein
 			this->token = scanner->nextToken();
 			if (this->token->type == 9){  //Integer (Zahl) muss danach kommen -> type entspricht state_digit = 9
+				Token* token_tmp = token;
 				this->token = scanner->nextToken();
 				if (this->token->type == ']'){	//Eckige Klammer zu am Schluss
 					this->status = 1;
+					token = token_tmp;
 					cout << "ARRAY" << endl;
 				}else{
 					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
@@ -157,6 +212,7 @@ Array::Array(Scanner* scanner) {
 				throw -1;
 			}
 		}else{
+			this->token = scanner->token;
 			scanner->ungetToken(this->token);
 			this->status = 0;//Ansonten ist Array leer
 		}
@@ -169,12 +225,13 @@ Array::Array(Scanner* scanner) {
 Statements::Statements(Scanner* scanner) {
 	try{
 		this->statement = new Statement(scanner);
-		if(this->statement->status == -1){	//Wenn STATEMENT nicht vorhanden
+		if(this->statement->status == -1){	//Wenn STATEMENT fehlerhaft
 			throw -1;
 		}
 		else if(this->statement->status == 1){	//Wenn STATEMENT vorhanden
 			this->token = scanner->nextToken();
 			if(this->token->type == ';'){
+				//scanner->ungetToken(this->token)
 				this->statements = new Statements(scanner);
 				if(this->statements->status == 0){	//Wenn STATEMENTS leer
 					this->statements = NULL;
@@ -189,9 +246,11 @@ Statements::Statements(Scanner* scanner) {
 					cout << "STATEMENTS" << endl;
 				}
 			}
-			else{
+			else{//Wenn kein ;
 				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
 				throw -1;
+//				this->token = scanner->token;
+//				this->status = 0;
 			}
 		}
 	}
@@ -203,7 +262,7 @@ Statements::Statements(Scanner* scanner) {
 Statement::Statement(Scanner* scanner) {
 	try{
 		this->token = scanner->nextToken();
-		if(token->symTab->ttype == 3 /*identifier*/){	//Wenn identifier
+		if(this->token->type == 8 && token->symTab->ttype == 3 /*identifier*/){	//Wenn identifier
 			this->index = new Index(scanner);
 			if(this->index->status == 1 || this->index->status == 0){	//Wenn INDEX da oder leer	//1 = Token vorhanden, 0 = Token nicht vorhanden, -1 = Token falsch
 				this->token = scanner->nextToken();
@@ -230,7 +289,7 @@ Statement::Statement(Scanner* scanner) {
 			}
 
 		}
-		else if(this->token->symTab->ttype == 4 /*write*/){	//Wenn write
+		else if(this->token->type == 8 && this->token->symTab->ttype == 4 /*write*/){	//Wenn write
 			this->token = scanner->nextToken();
 			if(this->token->type == '('){ //Wenn (
 				this->exp = new Exp(scanner);
@@ -254,11 +313,11 @@ Statement::Statement(Scanner* scanner) {
 				throw -1;
 			}
 		}
-		else if(token->symTab->ttype == 5 /*read*/){	//Wenn read vorhanden
+		else if(this->token->type == 8 && token->symTab->ttype == 5 /*read*/){	//Wenn identifier und der ist read vorhanden
 			this->token = scanner->nextToken();
 			if (this->token->type == '('){	//Wenn ( vorhanden
 				this->token = scanner->nextToken();
-				if (this->token->symTab->ttype == 3 /*identifier*/){	//Wenn identifier vorhanden
+				if (this->token->type == 8 && this->token->symTab->ttype == 3 /*identifier*/){	//Wenn identifier und identifier in symtab vorhanden
 					this->index = new Index(scanner);
 					if(this->index->status == 1 || this->index->status == 0){	//Wenn INDEX vorhanden oder leer hole neues Token
 						if(this->index->status == 0){	//Wenn INDEX leer
@@ -306,7 +365,7 @@ Statement::Statement(Scanner* scanner) {
 				throw -1;
 			}
 		}
-		else if(token->symTab->ttype == 2 /*IF*/){	//Wenn if vorhanden
+		else if(this->token->type == 8 && token->symTab->ttype == 2 /*IF*/){	//Wenn if vorhanden
 			this->token = scanner->nextToken();
 			if(this->token->type == '('){	//Wenn ( vorhanden
 				this->exp = new Exp(scanner);
@@ -316,7 +375,7 @@ Statement::Statement(Scanner* scanner) {
 						this->statement = new Statement(scanner);
 						if(this->statement->status == 1){	//Wenn STATEMENT vorhanden
 							this->token = scanner->nextToken();
-							if(this->token->symTab->ttype == 6 /*else*/){ //Wenn else vorhanden
+							if(this->token->type == 8 && this->token->symTab->ttype == 6 /*else*/){ //Wenn Token = identifier und ist else vorhanden
 								this->statement2 = new Statement(scanner);
 								if(this->statement2->status == 1){	//Wenn zweites STATEMENT
 									this->status = 1;
@@ -349,7 +408,7 @@ Statement::Statement(Scanner* scanner) {
 				throw -1;
 			}
 		}
-		else if(token->symTab->ttype == 1 /*while*/){	//Wenn while vorhanden
+		else if(this->token->type == 8 && token->symTab->ttype == 1 /*while*/){	//Wenn Token ist identifier und ist while vorhanden
 			this->token = scanner->nextToken();
 			if(this->token->type == '('){	//Wenn ( vorhanden
 				this->exp = new Exp(scanner);
@@ -379,9 +438,12 @@ Statement::Statement(Scanner* scanner) {
 				throw -1;
 			}
 		}
-		{	//Wenn nichts passendes für Statement vorhanden
-			cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
-			throw -1;
+		else{	//Wenn nichts passendes für Statement vorhanden gehe von leer aus
+			this->token = scanner->token;
+			scanner->ungetToken(this->token);
+			this->status = 0;
+			//			cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+			//			throw -1;
 		}
 	}
 	catch(int f){
@@ -489,13 +551,10 @@ Index::Index(Scanner* scanner){
 				throw -1;
 			}
 		}
-		else if(Index::isOperandOrDDE(this->token)){	//Wenn aktuelles Token nicht [, sondern OP oder := ist
+		else{	//Wenn aktuelles Token nicht [ ist, dann gehe davon aus, dass ARRAY leer
 			this->status = 0;
+			this->token = scanner->token;
 			scanner->ungetToken(this->token);
-		}
-		else{	//Wenn kein OP oder := oder [
-			cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
-			throw -1;
 		}
 	}
 	catch(int f){
@@ -516,7 +575,11 @@ Op_exp::Op_exp(Scanner* scanner) {
 				throw -1;
 			}
 		}
-		else{	//Wenn OP fehlerhaft oder leer
+		else if(this->op->status == 0){	//Wenn OP leer, dann OP_EXP leer
+			this->status = 0;
+			//scanner->ungetToken(this->token);
+		}
+		else{	//Wenn OP fehlerhaft
 			throw -1;
 		}
 	}
@@ -532,10 +595,10 @@ Op::Op(Scanner* scanner) {
 			this->status = 1;
 			cout << "OP" << endl;
 		}
-		//Ausnahmefälle behandeln!!! Wenn OP leer usw.
-		else{
-			cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
-			throw -1;
+		else{	//Wenn etwas anderes als Operand, dann gehe davon aus, dass Operand leer bzw. dass daher auch OP_EXP leer
+			this->status = 0;
+			this->token = scanner->token;
+			scanner->ungetToken(this->token);
 		}
 	}
 	catch(int f){

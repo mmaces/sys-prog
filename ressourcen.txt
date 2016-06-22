@@ -1,0 +1,15 @@
+int[1] a;
+int[1] m;
+
+{m[1] := 5;}
+
+
+
+m[1] := 5;
+m[(1)] := (6);
+write(1);
+write((2));
+read(hallo[1]);
+{}
+
+if(5)write(1)else write(1);

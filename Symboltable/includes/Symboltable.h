@@ -18,6 +18,7 @@ public:
 	char* lex;
 	SymtabEntry* next;
 	int ttype;
+	int varType = 0;
 };
 
 class Symboltable {

@@ -12,6 +12,7 @@
 #include "../includes/Symboltable.h"
 
 
+
 SymtabEntry::SymtabEntry(char* lex, SymtabEntry* next,int ttype){
 	this->lex = (char*)malloc(strlen(lex)+1);
 	strcpy(this->lex,lex);
@@ -50,6 +51,7 @@ void Symboltable::initSymbols(){
 	insert("write");  // ttype 4
 	insert("read");	  // ttype 5
 	insert("else");	  // ttype 6
+	insert("ELSE");	  // ttype 6
 	insert("int");	  // ttype 7
 }
 
@@ -77,7 +79,7 @@ SymtabEntry* Symboltable::insert(char* lexem){
 		ttype = 4;
 	}else if(!(strcmp(lexem, "read"))){
 		ttype = 5;
-	}else if(!(strcmp(lexem, "else"))){
+	}else if(!(strcmp(lexem, "else")&&strcmp(lexem,"ELSE"))){
 		ttype = 6;
 	}else if(!(strcmp(lexem, "int"))){
 		ttype = 7;

@@ -11,16 +11,6 @@
 #include "../../Scanner/includes/Scanner.h"
 #include "Tree.h"
 
-
-
-class Parser{
-public:
-	// Konstruktoren
-	Parser(char* file);
-    int parse();
-	Scanner* scanner;
-};
-
 class Statements;
 class Decls;
 class Decl;
@@ -34,6 +24,23 @@ class Index;
 class Op_exp;
 class Op;
 
+class Parser{
+public:
+	// Konstruktoren
+	Parser(char* file);
+
+    int parse();
+    void typeCheckProg(Prog* prog);
+    void typeCheckDecl(Decl* decl);
+    void typeCheckDecls(Decls* decls);
+    void typeCheckArray(Array* array);
+
+	Scanner* scanner;
+	Prog* prog;
+};
+
+
+
 
 class Prog{
 public:
@@ -42,6 +49,7 @@ public:
 	Decls* decls;
 	Statements* statements;
 	int status = 0; //-1 Existent mit Fehler | 0 leer((e) Menge) | 1 Existent ohne Fehler
+	int type;
 };
 
 class Decls{
@@ -51,6 +59,7 @@ public:
 	Decls* decls;
 	Decl* decl;
 	int status = 0;
+	int type;
 };
 
 class Decl{
@@ -58,7 +67,9 @@ public:
 	Decl(Scanner* scanner);
 	Array* array;
 	Token* token;
+
 	int status = 0;
+	int type;
 };
 
 class Array{
@@ -66,6 +77,7 @@ public:
 	Array(Scanner* scanner);
 	Token* token;
 	int status = 0;
+	int type;
 };
 
 class Statements{

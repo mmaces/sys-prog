@@ -98,7 +98,6 @@ int Scanner::getTokenSize(Token* tk){
 	while(inhalt[i] != '\0'){
 		  i++;
 		  size++;
-		  cout << "Size: " << size << endl;
 	 }
 	return size;
 }
