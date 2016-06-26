@@ -34,7 +34,13 @@ public:
     void typeCheckDecl(Decl* decl);
     void typeCheckDecls(Decls* decls);
     void typeCheckArray(Array* array);
-
+    void typeCheckStatements(Statements* statements);
+    void typeCheckStatement(Statement* statement);
+    void typeCheckIndex(Index* index);
+    void typeCheckExp(Exp* exp);
+    void typeCheckExp2(Exp2* exp2);
+    void typeCheckOp_Exp(Op_exp* op_exp);
+    void typeCheckOp(Op* op);
 	Scanner* scanner;
 	Prog* prog;
 };
@@ -87,6 +93,7 @@ public:
 	Statement* statement;
 	Statements* statements;
 	int status = 0;
+	int type;
 };
 
 class Statement{
@@ -100,6 +107,7 @@ public:
 	Statement* statement2;
 	bool beginWithCurrentToken = false;
 	int status = 0;
+	int type;
 };
 
 class Exp{
@@ -109,6 +117,7 @@ public:
 	Exp2* exp2;
 	Op_exp* op_exp;
 	int status = 0;
+	int type;
 };
 
 class Exp2{
@@ -119,6 +128,7 @@ public:
 	Index* index;
 	Exp2* exp2;
 	int status = 0;
+	int type;
 };
 
 class Index{
@@ -128,6 +138,7 @@ public:
 	Exp* exp;
 	int status = 0;
 	bool isOperandOrDDE(Token* tk);
+	int type;
 };
 
 class Op_exp{
@@ -137,6 +148,7 @@ public:
 	Op* op;
 	Exp* exp;
 	int status = 0;
+	int type;
 };
 
 class Op{
@@ -145,6 +157,7 @@ public:
 	Token* token;
 	int status = 0;
 	bool isOperand(Token* tk);
+	int type;
 };
 
 #endif /* INCLUDES_PARSER_H_ */

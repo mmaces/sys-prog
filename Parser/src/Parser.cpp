@@ -1,6 +1,10 @@
 #include "../includes/Parser.h"
 #include <cstdlib>
 
+/** Status sind die alternativen!
+ *
+ **/
+
 enum varType{
 	noType,
 	intType,
@@ -15,6 +19,8 @@ enum varType{
 	opEqual,
 	opUnEqual,
 	opAndAnd,
+	opDoubleDot,
+	opEqualDoubleDotEqual,
 	errorType
 } vType;
 
@@ -39,11 +45,11 @@ int Parser::parse(){
 		return -1;
 	}
 }
-
+// Haupt typeCheck: Diese Methode wird aufgerufen um den kompletten Baum auf semantische Korrektheit zu prüfen
 void Parser::typeCheckProg(Prog* prog){
 	cout << "PROG typecheck begin" << endl;
 	typeCheckDecls(prog->decls);
-	//typeCheckStatements(prog->statements);
+	typeCheckStatements(prog->statements);
 	prog->type = noType;
 }
 
@@ -84,6 +90,161 @@ void Parser::typeCheckArray(Array* array){
 		}
 	}else{
 		array->type = noType;
+	}
+}
+
+void Parser::typeCheckStatements(Statements* statements){
+	if(statements->status != 0){
+		typeCheckStatement(statements->statement);
+		typeCheckStatements(statements->statements);
+	}
+	statements->type = noType;
+}
+// status klären !!! Der status sind die verschiedenen Varianten der Mehtode auf den Folien
+void Parser::typeCheckStatement(Statement* statement){
+	if(statement->status == 0){
+		typeCheckExp(statement->exp);
+		typeCheckIndex(statement->index);
+
+		int identType = statement->token->symTab->varType;
+
+		if(identType == noType){
+			cerr << "identifier not defined" << endl;
+			statement->type = errorType;
+		}else if((statement->exp->type == intType)
+				&& ((identType == intType && statement->index->type == noType)
+				|| (identType == intArrayType && statement->index->type == arrayType))){
+			statement->type = noType;
+		}else{
+			cerr << "incompatible types" << endl;
+			statement->type = errorType;
+		}
+	}else if(statement->status == 1){
+		typeCheckExp(statement->exp);
+		statement->type = noType;
+	}else if(statement->status == 2){
+		typeCheckIndex(statement->index);
+
+		if(statement->token->symTab->varType == noType){
+			cerr << "identifier not defined" << endl;
+			statement->type = errorType;
+		}else if(((statement->token->symTab->varType == intType) && statement->index->type == noType) || ((statement->token->symTab->varType == intArrayType) && statement->index->type == arrayType)){
+			statement->type = noType;
+		}else{
+			cerr << "incompatible types" <<endl;
+			statement->type = errorType;
+		}
+	}else if(statement->status == 3){
+		typeCheckStatements(statement->statements);
+		statement->type = noType;
+	}else if(statement->status == 4){
+		typeCheckExp(statement->exp);
+		typeCheckStatement(statement->statement);
+		typeCheckStatement(statement->statement2);
+
+		if(statement->exp->type == errorType){
+			statement->type = errorType;
+		}else{
+			statement->type = noType;
+		}
+	}else if(statement->status == 5){
+		typeCheckExp(statement->exp);
+		typeCheckStatement(statement->statement);
+
+		if(statement->exp == errorType){
+			statement->type = errorType;
+		}else{
+			statement->type = noType;
+		}
+	}
+}
+void Parser::typeCheckIndex(Index* index){
+	if(index->status != 0){
+		typeCheckExp(index->exp);
+
+		if(index->exp->type == errorType){
+			index->type = errorType;
+		}else{
+			index->type = arrayType;
+		}
+	}else{
+		index->type = noType;
+	}
+}
+void Parser::typeCheckExp(Exp* exp){
+	typeCheckExp2(exp->exp2);
+	typeCheckOp_Exp(exp->op_exp);
+
+	if(exp->op_exp->type == noType){
+		exp->type = exp->exp2->type;
+	}else if(exp->exp2->type != exp->op_exp->type){
+		exp->type = errorType;
+	}else{
+		exp->type = exp->exp2->type;
+	}
+}
+
+void Parser::typeCheckExp2(Exp2* exp2){ // status muss geklärt werden!!!! siehe statement!
+	if(exp2->status == 1){
+		typeCheckExp(exp2->exp);
+		exp2->type = exp2->exp->type;
+	}else if(exp2->status == 2){
+		typeCheckIndex(exp2->index);
+		if(exp2->token->symTab->varType == noType){
+			cerr << "identifier not defined" << endl;
+			exp2->type = errorType;
+		}else if((exp2->token->symTab->varType == intType) && (exp2->index->type == noType)){
+			exp2->type = exp2->token->symTab->varType;
+		}else if((exp2->token->symTab->varType == intArrayType) && (exp2->index->type == arrayType)){
+			exp2->type = intType;
+		}else{
+			cerr << "no primitive Type" << endl;
+			exp2->type = errorType;
+		}
+	}else if(exp2->status == 3){
+		exp2->type = intType;
+	}else if(exp2->status == 4){
+		typeCheckExp2(exp2->exp2);
+		exp2->type = exp2->exp2->type;
+	}else if(exp2->status == 5){
+		typeCheckExp2(exp2->exp2);
+		if(exp2->exp2->type != intType){
+			exp2->type = errorType;
+		}else{
+			exp2->type = intType;
+		}
+	}
+}
+
+void Parser::typeCheckOp_Exp(Op_exp* op_exp){
+	if(op_exp->status != 0){
+		typeCheckOp(op_exp->op);
+		typeCheckExp(op_exp->exp);
+		op_exp->type = op_exp->exp->type;
+	}else{
+		op_exp->type = noType;
+	}
+}
+
+void Parser::typeCheckOp(Op* op){
+	if(strcmp(op->token->inhalt,"+") != 0){
+		op->type = opPlus;
+	}else if(strcmp(op->token->inhalt,"-") != 0){
+		op->type = opMinus;
+	}else if(strcmp(op->token->inhalt,"*") != 0){
+		op->type = opMult;
+	}else if(strcmp(op->token->inhalt,":") != 0){
+		op->type = opDiv;
+	}else if(strcmp(op->token->inhalt,"<") != 0){
+		op->type = opLess;
+	}else if(strcmp(op->token->inhalt,">") != 0){
+		op->type = opGreater;
+	}else if(strcmp(op->token->inhalt,"=") != 0){
+		op->type = opEqual;
+	}else if(strcmp(op->token->inhalt,"=:=") != 0){
+		op->type = opUnEqual;
+	}else if(strcmp(op->token->inhalt,"&&") != 0){
+		op->type = opAndAnd;
 	}
 }
 

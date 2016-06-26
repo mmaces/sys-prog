@@ -6,11 +6,8 @@
  */
 #include "../includes/Parser.h"
 int main(int argc, char **argv) {
+	cout << "... start!" << endl;
+	cout << "... start!" << endl;
 	Parser* parser = new Parser(argv[1]);
-	int a = parser->parse();
-	parser->typeCheckProg(parser->prog);
-	if(a == -1){
-		return -1;
-	}
-	cout << "... done!" << endl;
+
 }
