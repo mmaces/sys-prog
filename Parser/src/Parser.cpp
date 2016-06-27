@@ -1,10 +1,6 @@
 #include "../includes/Parser.h"
 #include <cstdlib>
 
-/** Status sind die alternativen!
- *
- **/
-
 enum varType{
 	noType,
 	intType,
@@ -43,6 +39,10 @@ int Parser::parse(){
 		return -1;
 	}
 }
+
+/** Status sind die alternativen!
+ *
+ **/
 // Haupt typeCheck: Diese Methode wird aufgerufen um den kompletten Baum auf semantische Korrektheit zu prüfen
 void Parser::typeCheckProg(Prog* prog){
 	cout << "PROG typecheck begin" << endl;
@@ -126,8 +126,10 @@ void Parser::typeCheckStatement(Statement* statement){
 		if(statement->token->symTab->varType == noType){
 			cerr << "identifier not defined" << endl;
 			statement->type = errorType;
-		}else if(((statement->token->symTab->varType == intType) && statement->index->type == noType) || ((statement->token->symTab->varType == intArrayType) && statement->index->type == arrayType)){
-			statement->type = noType;
+		}else if(((statement->token->symTab->varType == intType) && statement->index->type == noType) 
+			|| ((statement->token->symTab->varType == intArrayType) && statement->index->type == arrayType)){
+		    	
+		    	statement->type = noType;
 		}else{
 			cerr << "incompatible types" <<endl;
 			statement->type = errorType;
