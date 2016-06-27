@@ -50,12 +50,12 @@ void Parser::typeCheckProg(Prog* prog){
 	typeCheckStatements(prog->statements);
 	prog->type = noType;
 }
-
+// typeCheck: DECL
 void Parser::typeCheckDecl(Decl* decl){
 	typeCheckArray(decl->array);
-	if(decl->token->symTab->varType!=noType){ // Vielleicht flasch?
+	if(decl->token->symTab->varType!=noType){ 
 		cerr<<"identifier already defined"<< endl;
-		decl->status = errorType;
+		decl->type = errorType;
 	}else if(decl->array->type == errorType){
 		decl->type = errorType;
 	}else{
@@ -68,7 +68,7 @@ void Parser::typeCheckDecl(Decl* decl){
 	}
 	cout << "typecheck: identifier " << decl->token->inhalt<<" array integer: " << strtol(decl->array->token->inhalt,NULL,10) <<endl;
 }
-
+// typeCheck: DECLS
 void Parser::typeCheckDecls(Decls* decls){
 	if(decls->status != 0){
 		typeCheckDecl(decls->decl);
@@ -76,7 +76,7 @@ void Parser::typeCheckDecls(Decls* decls){
 	}
 	decls->type = noType;
 }
-
+// typeCheck: ARRAY
 void Parser::typeCheckArray(Array* array){
 
 	if(array->status != 0){
@@ -90,7 +90,7 @@ void Parser::typeCheckArray(Array* array){
 		array->type = noType;
 	}
 }
-
+// typeCheck: STATEMENTS
 void Parser::typeCheckStatements(Statements* statements){
 	if(statements->status != 0){
 		typeCheckStatement(statements->statement);
@@ -98,9 +98,9 @@ void Parser::typeCheckStatements(Statements* statements){
 	}
 	statements->type = noType;
 }
-// status klären !!! Der status sind die verschiedenen Varianten der Mehtode auf den Folien
+// typeCheck: STATEMENT
 void Parser::typeCheckStatement(Statement* statement){
-	if(statement->status == 0){
+	if(statement->status == 1){
 		typeCheckExp(statement->exp);
 		typeCheckIndex(statement->index);
 
@@ -117,10 +117,10 @@ void Parser::typeCheckStatement(Statement* statement){
 			cerr << "incompatible types" << endl;
 			statement->type = errorType;
 		}
-	}else if(statement->status == 1){
+	}else if(statement->status == 2){
 		typeCheckExp(statement->exp);
 		statement->type = noType;
-	}else if(statement->status == 2){
+	}else if(statement->status == 3){
 		typeCheckIndex(statement->index);
 
 		if(statement->token->symTab->varType == noType){
@@ -132,10 +132,10 @@ void Parser::typeCheckStatement(Statement* statement){
 			cerr << "incompatible types" <<endl;
 			statement->type = errorType;
 		}
-	}else if(statement->status == 3){
+	}else if(statement->status == 4){
 		typeCheckStatements(statement->statements);
 		statement->type = noType;
-	}else if(statement->status == 4){
+	}else if(statement->status == 5){
 		typeCheckExp(statement->exp);
 		typeCheckStatement(statement->statement);
 		typeCheckStatement(statement->statement2);
@@ -145,7 +145,7 @@ void Parser::typeCheckStatement(Statement* statement){
 		}else{
 			statement->type = noType;
 		}
-	}else if(statement->status == 5){
+	}else if(statement->status == 6){
 		typeCheckExp(statement->exp);
 		typeCheckStatement(statement->statement);
 
@@ -156,6 +156,7 @@ void Parser::typeCheckStatement(Statement* statement){
 		}
 	}
 }
+// typeCheck: INDEX
 void Parser::typeCheckIndex(Index* index){
 	if(index->status != 0){
 		typeCheckExp(index->exp);
@@ -169,6 +170,7 @@ void Parser::typeCheckIndex(Index* index){
 		index->type = noType;
 	}
 }
+// typeCheck: EXP
 void Parser::typeCheckExp(Exp* exp){
 	typeCheckExp2(exp->exp2);
 	typeCheckOp_Exp(exp->op_exp);
@@ -181,7 +183,7 @@ void Parser::typeCheckExp(Exp* exp){
 		exp->type = exp->exp2->type;
 	}
 }
-
+// typeCheck: EXP2
 void Parser::typeCheckExp2(Exp2* exp2){ // status muss geklärt werden!!!! siehe statement!
 	if(exp2->status == 1){
 		typeCheckExp(exp2->exp);
@@ -213,7 +215,7 @@ void Parser::typeCheckExp2(Exp2* exp2){ // status muss geklärt werden!!!! siehe
 		}
 	}
 }
-
+// typeCheck: OP_EXP
 void Parser::typeCheckOp_Exp(Op_exp* op_exp){
 	if(op_exp->status != 0){
 		typeCheckOp(op_exp->op);
@@ -223,7 +225,7 @@ void Parser::typeCheckOp_Exp(Op_exp* op_exp){
 		op_exp->type = noType;
 	}
 }
-
+// typeCheck: OP
 void Parser::typeCheckOp(Op* op){
 	if(strcmp(op->token->inhalt,"+") != 0){
 		op->type = opPlus;
