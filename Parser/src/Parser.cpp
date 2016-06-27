@@ -19,8 +19,6 @@ enum varType{
 	opEqual,
 	opUnEqual,
 	opAndAnd,
-	opDoubleDot,
-	opEqualDoubleDotEqual,
 	errorType
 } vType;
 
