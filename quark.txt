@@ -1,2 +1,7 @@
-int[5] a;
-int[1] m;
+int a;
+int b;
+a:= 4;
+write(b);
+
+
+

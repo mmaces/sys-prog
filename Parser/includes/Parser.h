@@ -10,6 +10,8 @@
 
 #include "../../Scanner/includes/Scanner.h"
 #include "Tree.h"
+#include<iostream>
+#include<fstream>
 
 class Statements;
 class Decls;
@@ -28,9 +30,29 @@ class Parser{
 public:
 	// Konstruktoren
 	Parser(char* file);
+	~Parser();
+	fstream fs;
 
-    int parse();
-    void typeCheckProg(Prog* prog);
+	int parse();
+	int label1;
+	int label2;
+	int label3;
+	int label4;
+
+
+    void makeCodeProg();
+	void makeCodeDecls(Decls* decls);
+	void makeCodeDecl(Decl* decl);
+	void makeCodeStatements(Statements* statements);
+	void makeCodeStatement(Statement* statement);
+	void makeCodeIndex(Index* index);
+	void makeCodeExp(Exp* exp);
+	void makeCodeExp2(Exp2* exp2);
+	void makeCodeOp_Exp(Op_exp* op_exp);
+	void makeCodeOp(Op* op);
+
+
+    void typeCheckProg();
     void typeCheckDecl(Decl* decl);
     void typeCheckDecls(Decls* decls);
     void typeCheckArray(Array* array);
@@ -73,7 +95,6 @@ public:
 	Decl(Scanner* scanner);
 	Array* array;
 	Token* token;
-
 	int status = 0;
 	int type;
 };
