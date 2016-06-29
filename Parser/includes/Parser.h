@@ -67,12 +67,10 @@ public:
 	Prog* prog;
 };
 
-
-
-
 class Prog{
 public:
 	Prog(Scanner* scanner);
+	~Prog();
 	Token* token;
 	Decls* decls;
 	Statements* statements;
@@ -83,6 +81,7 @@ public:
 class Decls{
 public:
 	Decls(Scanner* scanner);
+	~Decls();
 	Token* token;
 	Decls* decls;
 	Decl* decl;
@@ -93,8 +92,11 @@ public:
 class Decl{
 public:
 	Decl(Scanner* scanner);
+	~Decl();
 	Array* array;
 	Token* token;
+	char inhalt[5000];
+	int varType;
 	int status = 0;
 	int type;
 };
@@ -102,7 +104,10 @@ public:
 class Array{
 public:
 	Array(Scanner* scanner);
+	~Array();
 	Token* token;
+	char inhalt[5000];
+	int varType;
 	int status = 0;
 	int type;
 };
@@ -110,6 +115,7 @@ public:
 class Statements{
 public:
 	Statements(Scanner* scanner);
+	~Statements();
 	Token* token;
 	Statement* statement;
 	Statements* statements;
@@ -120,7 +126,10 @@ public:
 class Statement{
 public:
 	Statement(Scanner* scanner);
+	~Statement();
 	Token* token;
+	char inhalt[5000];
+	int varType;
 	Index* index;
 	Exp* exp;
 	Statements* statements;
@@ -134,6 +143,7 @@ public:
 class Exp{
 public:
 	Exp(Scanner* scanner);
+	~Exp();
 	Token* token;
 	Exp2* exp2;
 	Op_exp* op_exp;
@@ -144,7 +154,10 @@ public:
 class Exp2{
 public:
 	Exp2(Scanner* scanner);
+	~Exp2();
 	Token* token;
+	char inhalt[5000];
+	int varType;
 	Exp* exp;
 	Index* index;
 	Exp2* exp2;
@@ -155,6 +168,7 @@ public:
 class Index{
 public:
 	Index(Scanner* scanner);
+	~Index();
 	Token* token;
 	Exp* exp;
 	int status = 0;
@@ -165,6 +179,7 @@ public:
 class Op_exp{
 public:
 	Op_exp(Scanner* scanner);
+	~Op_exp();
 	Token* token;
 	Op* op;
 	Exp* exp;
@@ -175,7 +190,9 @@ public:
 class Op{
 public:
 	Op(Scanner* scanner);
+	~Op();
 	Token* token;
+	char inhalt[5000];
 	int status = 0;
 	bool isOperand(Token* tk);
 	int type;

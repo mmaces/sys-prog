@@ -1,7 +1,5 @@
-int a;
-int b;
-a:= 4;
-write(b);
-
-
-
+int n;
+int[3] m;
+n := 3 + 4;
+n := 3*n--5;
+write(n);

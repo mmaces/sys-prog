@@ -57,6 +57,8 @@ Token* Scanner::nextToken(){
 
 	if(token->type == 8){ // 8 Entspricht dem Zustand identifier im Automat
 		token->setSymTab(symTab->insert(token->inhalt));
+	}else if(token->type == 9){
+		token->setSymTab(symTab->insert(token->inhalt));
 	}
 
 	//std::cout<<token->getColumn() << " " << token->getInhalt()<<std::endl;
