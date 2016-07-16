@@ -6,12 +6,13 @@
  */
 #include "../includes/Parser.h"
 int main(int argc, char **argv) {
-	cout << "... start!" << endl;
-	cout << "... start!" << endl;
 	Parser* parser = new Parser(argv[1]);
 	if(parser->parse() != -1){
+		cout <<"Type checking..."<< endl;
 		parser->typeCheckProg();
+		cout <<"Generating code..."<< endl;
 		parser->makeCodeProg();
+		cout <<"...success!"<< endl;
 	}
 
 }

@@ -3,21 +3,21 @@
 #include <cstring>
 
 enum varType{
-	noType,
-	intType,
-	intArrayType,
-	arrayType,
-	opPlus,
-	opMinus,
-	opMult,
-	opDiv,
-	opLess,
-	opGreater,
-	opEqual,
-	opUnEqual,
-	opAndAnd,
-	errorType
-} vType;
+	noType = 0,
+	intType = 1,
+	intArrayType = 2,
+	arrayType = 3,
+	opPlus = 4,
+	opMinus = 5,
+	opMult = 6,
+	opDiv = 7,
+	opLess = 8,
+	opGreater = 9,
+	opEqual = 10,
+	opUnEqual = 11,
+	opAndAnd = 12,
+	errorType = 13
+} varType;
 
 enum state2 {
 		Identifier = 8,
@@ -142,12 +142,6 @@ int Parser::parse(){
 			else if(prog->status == 0){
 				throw 0;
 			}
-			cout << "DEBUG:" << endl;
-			//cout << &prog->decls->decl->token<< " " << prog->decls->decl->token->inhalt << endl;
-			cout << prog->decls->decl->inhalt << endl;
-			//cout << &prog->decls->decls->decl->token << " " << prog->decls->decls->decl->token->inhalt << endl;
-			cout << prog->decls->decls->decl->inhalt << endl;
-			cout << "...success!" << endl;
 		}
 		catch(int f)
 		{
@@ -159,11 +153,9 @@ int Parser::parse(){
  * make Code
  */
 void Parser::makeCodeProg(){
-	cout<<"makeCode begin"<<endl;
 	makeCodeDecls(this->prog->decls);
 	makeCodeStatements(this->prog->statements);
 	fs<<"STP"<<endl;
-	cout << "makeCode finished"<<endl;
 }
 void Parser::makeCodeDecls(Decls* decls){
 	if(decls->status != 0){
@@ -203,7 +195,6 @@ void Parser::makeCodeStatement(Statement* statement){
 
 	if(statement->status == 2){ // write
 		makeCodeExp(statement->exp);
-		cout<<"PRINT"<<endl;
 		fs << "PRI"<<endl;
 	}
 	else if(statement->status == 3){//read
@@ -303,7 +294,7 @@ void Parser::makeCodeOp(Op* op){
 	else if(op->token->type == '-'){
 		fs<<"SUB"<<endl;
 	}
-	else if(op->token->type == '*'){
+	else if(op->token->type == Star){
 		fs<<"MUL"<<endl;
 	}
 	else if(op->token->type == ':'){
@@ -315,13 +306,13 @@ void Parser::makeCodeOp(Op* op){
 	else if(op->token->type == '>'){
 
 	}
-	else if(op->token->type == '='){
+	else if(op->token->type == Equal){
 		fs<<"EQU"<<endl;
 	}
-	else if(op->token->type == 16){// =:=
+	else if(op->token->type == EqualDoubleDotEqual){// =:=
 		fs<<"EQU"<<endl;
 	}
-	else if(op->token->type == 19){ // &&
+	else if(op->token->type == AndAnd){ // &&
 		fs<<"AND"<<endl;
 	}
 }
@@ -333,7 +324,6 @@ void Parser::makeCodeOp(Op* op){
  **/
 // Haupt typeCheck: Diese Methode wird aufgerufen um den kompletten Baum auf semantische Korrektheit zu prüfen
 void Parser::typeCheckProg(){
-	cout << "PROG typecheck begin" << endl;
 	typeCheckDecls(this->prog->decls);
 	typeCheckStatements(this->prog->statements);
 	this->prog->type = noType;
@@ -354,7 +344,6 @@ void Parser::typeCheckDecl(Decl* decl){
 			decl->varType = intType;
 		}
 	}
-	cout << "typecheck: identifier " << decl->inhalt<<" array integer: " << strtol(decl->array->inhalt,NULL,10) <<endl;
 }
 // typeCheck: DECLS
 void Parser::typeCheckDecls(Decls* decls){
@@ -548,18 +537,15 @@ Prog::Prog(Scanner* scanner){
 		}
 		if(this->decls->decl->token == NULL){
 			this->status = 0;
-			cout << "File empty!" << endl;
+			cerr << "File empty!" << endl;
 			throw 0;
 		}
-		cout << this->decls->decl->inhalt << endl;
-		cout << this->decls->decls->decl->inhalt << endl;
 		this->statements = new Statements(scanner);
 		if(this->statements->status == -1){
 			throw -1;
 		}
 		else{
 			this->status = 1;
-			cout << "PROG" << endl;
 		}
 
 	}
@@ -583,7 +569,6 @@ Decls::Decls(Scanner* scanner) {
 			}
 			else if(this->token->type == ';'){	//Wenn ;
 				this->status = 1;
-				cout << "DECLS" << endl;
 				this->decls = new Decls(scanner);
 			}
 			else{	//Wenn kein ;
@@ -602,7 +587,6 @@ Decls::Decls(Scanner* scanner) {
 
 
 Decl::Decl(Scanner* scanner) {
-	cout << "DEBUG-DeclAnfang: " <<this->inhalt << endl;
 	try{
 		this->token = scanner->nextToken();	//ggf. erstes Token, wenn NULL dann legitimes Dateiende
 		if(this->token == NULL){
@@ -629,7 +613,6 @@ Decl::Decl(Scanner* scanner) {
 
 					//this->inhalt = this->token->inhalt;
 					this->varType = this->token->symTab->varType;
-					cout << "DECL" << &this->token << " " << this->token->inhalt <<endl;
 				}
 				else{
 					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
@@ -648,7 +631,6 @@ Decl::Decl(Scanner* scanner) {
 	catch(int f){
 		this->status = f;
 	}
-	cout << "DEBUG-DeclEnde: " <<this->inhalt << endl;
 }
 
 Array::Array(Scanner* scanner) {
@@ -715,7 +697,6 @@ Statements::Statements(Scanner* scanner) {
 			}
 			else if(this->token->type == ';'){	//Wenn ;
 				this->status = 1;
-				cout << "STATEMENTS" << endl;
 				this->statements = new Statements(scanner);
 			}
 			else{	//Wenn kein ;
@@ -756,7 +737,6 @@ Statement::Statement(Scanner* scanner) {
 					this->exp = new Exp(scanner);
 					if(this->exp->status >= 1){	//Wenn EXP vorhanden
 						this->status = 1;
-						cout << "STATEMENT" << endl;
 					}
 					else{	//Wenn EXP nicht vorhanden (oder leer)
 						throw -1;
@@ -788,7 +768,6 @@ Statement::Statement(Scanner* scanner) {
 					}
 					else if(this->token->type == ')'){	//Wenn )
 						this->status = 2;
-						cout << "STATEMENT" << endl;
 					}
 					else{	//Wenn ) nicht vorhanden
 						cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
@@ -829,7 +808,6 @@ Statement::Statement(Scanner* scanner) {
 						}
 						else if(this->token->type == ')'){	//Wenn ) vorhanden
 							this->status = 3;
-							cout << "STATEMENT" << endl;
 						}
 						else{	//Wenn ) nicht vorhanden
 							cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
@@ -861,7 +839,6 @@ Statement::Statement(Scanner* scanner) {
 				}
 				else if(this->token->type == '}'){	//Wenn } vorhanden
 					this->status = 4;
-					cout << "STATEMENTS" << endl;
 				}
 				else{	//Wenn } nicht vorhanden
 					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
@@ -898,7 +875,6 @@ Statement::Statement(Scanner* scanner) {
 								this->statement2 = new Statement(scanner);
 								if(this->statement2->status >= 1){	//Wenn zweites STATEMENT
 									this->status = 5;
-									cout << "STATEMENT" << endl;
 								}
 								else{	//Wenn zweites STATEMENT fehlerhaft oder leer
 									throw -1;
@@ -945,7 +921,6 @@ Statement::Statement(Scanner* scanner) {
 						this->statement = new Statement(scanner);
 						if(this->statement->status >= 1){	//Wenn STATEMENT vorhanden
 							this->status = 6;
-							cout << "STATEMENT" << endl;
 						}
 						else{	//Wenn STATEMENT nicht vorhanden oder leer
 							throw -1;
@@ -981,7 +956,6 @@ Exp::Exp(Scanner* scanner) {
 		if(this->exp2->status >= 1){	//Wenn EXP2 vorhanden
 			this->op_exp = new Op_exp(scanner);
 			if(this->op_exp->status >= 0){	//Wenn OP_EXP vorhanden oder leer
-				cout << "EXP" << endl;
 				this->status = 1;
 			}
 			else{	//Wenn OP_EXP fehlerhaft
@@ -1014,7 +988,6 @@ Exp2::Exp2(Scanner* scanner) {
 				}
 				else if(this->token->type == ')'){	//Wenn ) vorhanden
 					this->status = 1;
-					cout << "EXP2" << endl;
 				}
 				else{	//Wenn ) nicht vorhanden
 					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
@@ -1037,8 +1010,6 @@ Exp2::Exp2(Scanner* scanner) {
 			this->index = new Index(scanner);
 			if(this->index->status >= 0){	//Wenn INDEX leer oder vorhanden
 				this->status = 2;
-
-				cout << "EXP2" << endl;
 			}
 			if(this->index->status == -1){	//Wenn INDEX fehlerhaft
 				throw -1;
@@ -1054,7 +1025,6 @@ Exp2::Exp2(Scanner* scanner) {
 			}
 			this->inhalt[count] = '\0';
 			this->varType = this->token->symTab->varType;
-			cout << "EXP2" << endl;
 		}
 		else if(this->token->type == '-' || this->token->type == '!'){	//Wenn - oder !
 			this->exp2 = new Exp2(scanner);
@@ -1065,7 +1035,6 @@ Exp2::Exp2(Scanner* scanner) {
 				else{
 					this->status = 5;
 				}
-				cout << "EXP2" << endl;
 			}
 			else{	//Wenn EXP2 leer oder nicht vorhanden
 				throw -1;
@@ -1098,7 +1067,6 @@ Index::Index(Scanner* scanner){
 				}
 				else if(this->token->type == ']'){	//Wenn ] vorhanden
 					this->status = 1;
-					cout << "INDEX" << endl;
 				}
 				else{	//Wenn ] nicht vorhanden
 					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
@@ -1127,7 +1095,6 @@ Op_exp::Op_exp(Scanner* scanner) {
 			this->exp = new Exp(scanner);
 			if(this->exp->status == 1){	//Wenn EXP vorhanden
 				this->status = 1;
-				cout << "OP_EXP" << endl;
 			}
 			else{	//Wenn EXP fehlerhaft oder nicht vorhanden
 				throw -1;
@@ -1160,7 +1127,6 @@ Op::Op(Scanner* scanner) {
 				count++;
 			}
 			this->inhalt[count] = '\0';
-			cout << "OP" << endl;
 		}
 		else{	//Wenn etwas anderes als Operand, dann gehe davon aus, dass Operand leer bzw. dass daher auch OP_EXP leer
 			this->status = 0;
@@ -1181,14 +1147,3 @@ bool Op::isOperand(Token* tk){
 		return false;
 	}
 }
-//
-//bool Index::isOperandOrDDE(Token* tk){
-//	int t = tk->type;
-//	if (t == '+' || t == '-' || t == '*' ||  t == ':' || t == '<' || t == '>' || t == '=' || t == 16 /*EqualDoubleDotEqual*/ || t == 19 /*AndAnd*/){
-//		return true;
-//	}
-//	else{
-//		return false;
-//	}
-//}
-
