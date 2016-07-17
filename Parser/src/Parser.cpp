@@ -331,7 +331,7 @@ void Parser::typeCheckProg(){
 // typeCheck: DECL
 void Parser::typeCheckDecl(Decl* decl){
 	typeCheckArray(decl->array);
-	if(decl->varType!=noType){
+	if(scanner->symTab->insert(decl->inhalt)->varType!=noType){
 		cerr<<"identifier already defined"<< endl;
 		decl->type = errorType;
 	}else if(decl->array->type == errorType){
@@ -339,9 +339,11 @@ void Parser::typeCheckDecl(Decl* decl){
 	}else{
 		decl->type = noType;
 		if(decl->array->type == arrayType){
-			decl->varType = intArrayType;
+			scanner->symTab->insert(decl->inhalt)->varType = intArrayType;
+			//decl->varType = intArrayType;
 		}else{
-			decl->varType = intType;
+			scanner->symTab->insert(decl->inhalt)->varType = intType;
+			//decl->varType = intType;
 		}
 	}
 }
@@ -383,12 +385,12 @@ void Parser::typeCheckStatement(Statement* statement){
 
 		int identType = statement->exp->type;
 
-		if(identType == noType){
+		if(scanner->symTab->insert(statement->inhalt)->varType == noType){
 			cerr << "identifier not defined" << endl;
 			statement->type = errorType;
 		}else if((statement->exp->type == intType)
-				&& ((identType == intType && statement->index->type == noType)
-				|| (identType == intArrayType && statement->index->type == arrayType))){
+				&& ((scanner->symTab->insert(statement->inhalt)->varType == intType && statement->index->type == noType)
+				|| (scanner->symTab->insert(statement->inhalt)->varType == intArrayType && statement->index->type == arrayType))){
 			statement->type = noType;
 		}else{
 			cerr << "incompatible types" << endl;
@@ -400,11 +402,11 @@ void Parser::typeCheckStatement(Statement* statement){
 	}else if(statement->status == 3){
 		typeCheckIndex(statement->index);
 
-		if(statement->varType == noType){
+		if(scanner->symTab->insert(statement->inhalt)->varType == noType){
 			cerr << "identifier not defined" << endl;
 			statement->type = errorType;
-		}else if(((statement->varType == intType) && statement->index->type == noType)
-			|| ((statement->varType == intArrayType) && statement->index->type == arrayType)){
+		}else if(((scanner->symTab->insert(statement->inhalt)->varType == intType) && statement->index->type == noType)
+			|| ((scanner->symTab->insert(statement->inhalt)->varType == intArrayType) && statement->index->type == arrayType)){
 		    	
 		    	statement->type = noType;
 		}else{
@@ -469,12 +471,12 @@ void Parser::typeCheckExp2(Exp2* exp2){ // status muss geklärt werden!!!! siehe
 		exp2->type = exp2->exp->type;
 	}else if(exp2->status == 2){
 		typeCheckIndex(exp2->index);
-		if(exp2->varType == noType){
+		if(scanner->symTab->insert(exp2->inhalt)->varType == noType){
 			cerr << "identifier not defined" << endl;
 			exp2->type = errorType;
-		}else if((exp2->varType == intType) && (exp2->index->type == noType)){
-			exp2->type = exp2->varType;
-		}else if((exp2->varType == intArrayType) && (exp2->index->type == arrayType)){
+		}else if((scanner->symTab->insert(exp2->inhalt)->varType == intType) && (exp2->index->type == noType)){
+			exp2->type = scanner->symTab->insert(exp2->inhalt)->varType;
+		}else if((scanner->symTab->insert(exp2->inhalt)->varType == intArrayType) && (exp2->index->type == arrayType)){
 			exp2->type = intType;
 		}else{
 			cerr << "no primitive Type" << endl;

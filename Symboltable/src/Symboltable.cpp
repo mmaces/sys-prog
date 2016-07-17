@@ -61,7 +61,7 @@ Symboltable::~Symboltable() {
 }
 
 SymtabEntry* Symboltable::insert(char* lexem){
-	unsigned int hash = this->hash(lexem);
+	unsigned int hash = this->hash(lexem);   // Muss der hash hier nicht noch Modulo SymTabSize genommen werden?
 	SymtabEntry* current = this->tab[hash];
 	while (current){
 		if (strcmp(current->lex, lexem))
