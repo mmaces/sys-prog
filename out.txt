@@ -10,6 +10,68 @@ REA
 LA $a
 STR
 REA
+LA $b
+STR
+LA $a
+LV
+LC 0
+LES
+JIN #akr8
+LC 0
+LA $a
+LV
+SUB
+LA $a
+STR
+LA $a
+LV
+PRI
+NOP
+JMP #akr9
+#akr8 NOP
+NOP
+#akr9 NOP
+LA $b
+LV
+LC 0
+LES
+JIN #akr28
+LC 0
+LA $b
+LV
+SUB
+LA $b
+STR
+LA $b
+LV
+PRI
+NOP
+JMP #akr29
+#akr28 NOP
+NOP
+#akr29 NOP
+LA $a
+LV
+LA $b
+LV
+LA $c
+STR
+LA $a
+LV
+LA $c
+LV
+LA $b
+LV
+MUL
+SUB
+LA $d
+STR
+LA $d
+LV
+PRI
+LC 1
+PRI
+REA
 LA $a
 STR
 REA
@@ -25,12 +87,15 @@ LA $a
 LV
 LA $y
 STR
-#26NOP
+#akr86 NOP
 LC 0
 LA $b
 LV
 LES
-JIN#27
+JIN #akr87
+LA $b
+LV
+PRI
 LA $b
 LV
 LC 2
@@ -48,7 +113,7 @@ STR
 LA $mod
 LV
 LC 1
-JIN#40
+JIN #akr104
 LA $x
 LV
 LA $y
@@ -76,10 +141,10 @@ LV
 LA $x
 STR
 NOP
-JMP#41
-#60NOP
+JMP #akr105
+#akr104 NOP
 NOP
-#65NOP
+#akr105 NOP
 LA $y
 LV
 LA $y
@@ -112,8 +177,8 @@ LC 2
 LA $b
 STR
 NOP
-JMP#26
-#81NOP
+JMP #akr86
+#akr87 NOP
 LA $x
 LV
 LA $c

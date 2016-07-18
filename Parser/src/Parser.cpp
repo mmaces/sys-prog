@@ -205,20 +205,20 @@ void Parser::makeCodeStatement(Statement* statement){
 	}
 	else if(statement->status == 5){//if
 		makeCodeExp(statement->exp);
-		fs << "JIN"<< "#" << localLabel1<<endl; // Label 1 ???????
+		fs << "JIN "<< "#" << "akr"<<localLabel1<<endl; // Label 1 ???????
 		makeCodeStatement(statement->statement);
-		fs << "JMP"<< "#" << localLabel2<<endl; // Label 2 ???????
-		fs<<"#"<<label1<<"NOP"<<endl;
+		fs << "JMP "<< "#" << "akr"<<localLabel2<<endl; // Label 2 ???????
+		fs<<"#"<<"akr"<<localLabel1<<" NOP"<<endl;
 		makeCodeStatement(statement->statement2);
-		fs<<"#"<<label2 <<"NOP"<<endl;
+		fs<<"#"<<"akr"<<localLabel2 <<" NOP"<<endl;
 	}
 	else if(statement->status == 6){//while
-		fs << "#" << localLabel3 << "NOP"<<endl; // Label 1 ???????
+		fs << "#" << "akr"<<localLabel3 << " NOP"<<endl; // Label 1 ???????
 		makeCodeExp(statement->exp);
-		fs << "JIN"<< "#" << localLabel4<<endl; // Label 1 ???????
+		fs << "JIN "<< "#" << "akr"<<localLabel4<<endl; // Label 1 ???????
 		makeCodeStatement(statement->statement);
-		fs<<"JMP" << "#"<<localLabel3<<endl;
-		fs<<"#"<<label2 <<"NOP"<<endl;
+		fs<<"JMP " << "#"<<"akr"<<localLabel3<<endl;
+		fs<<"#"<<"akr"<<localLabel4 <<" NOP"<<endl;
 	}
 	else if(statement->status == 1){ // identifier
 		makeCodeExp(statement->exp);

@@ -15,7 +15,7 @@ int div;
 
 :* 25 *:
 read(a);
-:*   3*
+:*   3*:
 read(b);
 if (a < 0) { a := -a; write(a);} else{};
 if (b < 0) { b := -b; write(b);} else{};
@@ -52,6 +52,7 @@ read(c);
 x:=1;
 y:=a;
 while(0 < b){
+write(b);
  :* b % 2 *:
   div := b:2;
   mod := b - (div * 2);
