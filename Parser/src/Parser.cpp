@@ -942,9 +942,15 @@ Statement::Statement(Scanner* scanner) {
 				throw -1;
 			}
 		}
-		else{	//Wenn nichts passendes für Statement vorhanden fehler!
-			cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
-			throw -1;
+		else{	//Wenn nichts passendes für Statement vorhanden, prüfe auf braces close, ansonsten fehler!
+			if (this->token->type == '}'){
+				this->status = 0;
+				scanner->ungetToken(this->token);
+			}
+			else{
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				throw -1;
+			}
 		}
 	}
 	catch(int f){
