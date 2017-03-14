@@ -1,3 +1,20 @@
+
+
+
+/*
+ * FRAGEN
+ * - Soll man im Typcheck beim ersten Fehler aufhören?
+ * - Muss Zeile und Spalte beim ersten Typecheck Fehler angegeben werden wie bei Tree auch?
+ * - Brauch man ein Stop beim Typecheck?
+ * - Gilt der Zeilenfehler vom Scanner auch nochmal hier!????? O.O
+ * column - (d - ((number == 1)? 0 : number) - ((currentState == 12 || currentState == 14)? 2 : 0))
+ *
+ */
+
+
+
+
+
 #include "../includes/Parser.h"
 #include <cstdlib>
 #include <cstring>
@@ -47,10 +64,10 @@ enum state2 {
 Parser::Parser(char* file){
 	scanner = new Scanner(file);
 	fs.open("out.txt",ios::out);
-	label1 = 0;
-	label2 = 1;
-	label3 = 2;
-	label4 = 3;
+	label1 = 1;
+	label2 = 2;
+	label3 = 3;
+	label4 = 4;
 };
 
 
@@ -235,11 +252,11 @@ void Parser::makeCodeStatement(Statement* statement){
 void Parser::makeCodeExp(Exp* exp){
 	if(exp->op_exp->type == noType){
 		makeCodeExp2(exp->exp2);
-	}else if(exp->op_exp->type == opGreater){
+	}else if(exp->op_exp->op->type == opGreater){
 		makeCodeOp_Exp(exp->op_exp);
 		makeCodeExp2(exp->exp2);
 		fs<<"LES"<<endl;
-	}else if(exp->op_exp->type == opUnEqual){
+	}else if(exp->op_exp->op->type == opUnEqual){
 		makeCodeExp2(exp->exp2);
 		makeCodeOp_Exp(exp->op_exp);
 		fs << "NOT"<<endl;
@@ -508,23 +525,23 @@ void Parser::typeCheckOp_Exp(Op_exp* op_exp){
 }
 // typeCheck: OP
 void Parser::typeCheckOp(Op* op){
-	if(strcmp(op->inhalt,"+") != 0){
+	if(strcmp(op->inhalt,"+") == 0){
 		op->type = opPlus;
-	}else if(strcmp(op->inhalt,"-") != 0){
+	}else if(strcmp(op->inhalt,"-") == 0){
 		op->type = opMinus;
-	}else if(strcmp(op->inhalt,"*") != 0){
+	}else if(strcmp(op->inhalt,"*") == 0){
 		op->type = opMult;
-	}else if(strcmp(op->inhalt,":") != 0){
+	}else if(strcmp(op->inhalt,":") == 0){
 		op->type = opDiv;
-	}else if(strcmp(op->inhalt,"<") != 0){
+	}else if(strcmp(op->inhalt,"<") == 0){
 		op->type = opLess;
-	}else if(strcmp(op->inhalt,">") != 0){
+	}else if(strcmp(op->inhalt,">") == 0){
 		op->type = opGreater;
-	}else if(strcmp(op->inhalt,"=") != 0){
+	}else if(strcmp(op->inhalt,"=") == 0){
 		op->type = opEqual;
-	}else if(strcmp(op->inhalt,"=:=") != 0){
+	}else if(strcmp(op->inhalt,"=:=") == 0){
 		op->type = opUnEqual;
-	}else if(strcmp(op->inhalt,"&&") != 0){
+	}else if(strcmp(op->inhalt,"&&") == 0){
 		op->type = opAndAnd;
 	}
 }
@@ -539,7 +556,7 @@ Prog::Prog(Scanner* scanner){
 		}
 		if(this->decls->decl->token == NULL){
 			this->status = 0;
-			cerr << "File empty!" << endl;
+			cerr << "File empty!" << endl << "Stop"; exit(-1);
 			throw 0;
 		}
 		this->statements = new Statements(scanner);
@@ -559,6 +576,7 @@ Prog::Prog(Scanner* scanner){
 
 Decls::Decls(Scanner* scanner) {
 	try{
+
 		this->decl = new Decl(scanner);	//Baue DECLS
 		if(this->decl->status == -1){	//Wenn DECL fehlerhaft
 			throw -1;
@@ -566,7 +584,7 @@ Decls::Decls(Scanner* scanner) {
 		else if(this->decl->status >= 1){	//Wenn DECL vorhanden
 			this->token = scanner->nextToken();
 			if(this->token == NULL){
-				cerr << "Unexpected End of File (EOF)" << endl;
+				cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 			else if(this->token->type == ';'){	//Wenn ;
@@ -574,7 +592,7 @@ Decls::Decls(Scanner* scanner) {
 				this->decls = new Decls(scanner);
 			}
 			else{	//Wenn kein ;
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 		}
@@ -600,7 +618,7 @@ Decl::Decl(Scanner* scanner) {
 				//delete token;
 				this->token = scanner->nextToken();
 				if(this->token == NULL){
-					cerr << "Unexpected End of File (EOF)" << endl;
+					cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 				else if (this->token->type == 8 && this->token->symTab->ttype == 3 /*identifier*/){	//Wenn identifier in Tokentype und symtab
@@ -617,7 +635,7 @@ Decl::Decl(Scanner* scanner) {
 					this->varType = this->token->symTab->varType;
 				}
 				else{
-					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 			}
@@ -639,13 +657,13 @@ Array::Array(Scanner* scanner) {
 	try{
 		this->token = scanner->nextToken();
 		if(this->token == NULL){
-			cerr << "Unexpected End of File (EOF)" << endl;
+			cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 			throw -1;
 		}
 		else if (this->token->type == '['){	//Eckige Klammer auf muss zuerst da sein
 			this->token = scanner->nextToken();
 			if(this->token == NULL){
-				cerr << "Unexpected End of File (EOF)" << endl;
+				cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 			else if (this->token->type == 9){  //Integer (Zahl) muss danach kommen -> type entspricht state_digit = 9
@@ -658,19 +676,19 @@ Array::Array(Scanner* scanner) {
 				this->varType = this->token->symTab->varType;
 				this->token = scanner->nextToken();
 				if(this->token == NULL){
-					cerr << "Unexpected End of File (EOF)" << endl;
+					cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 				else if (this->token->type == ']'){	//Eckige Klammer zu am Schluss
 					this->status = 1;
 				}
 				else{
-					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 			}
 			else{
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 		}
@@ -694,7 +712,7 @@ Statements::Statements(Scanner* scanner) {
 		else if(this->statement->status >= 1){	//Wenn STATEMENT vorhanden
 			this->token = scanner->nextToken();
 			if(this->token == NULL){
-				cerr << "Unexpected End of File (EOF)" << endl;
+				cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 			else if(this->token->type == ';'){	//Wenn ;
@@ -702,7 +720,7 @@ Statements::Statements(Scanner* scanner) {
 				this->statements = new Statements(scanner);
 			}
 			else{	//Wenn kein ;
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 		}
@@ -732,7 +750,7 @@ Statement::Statement(Scanner* scanner) {
 			if(this->index->status >= 0){	//Wenn INDEX da oder leer	//1, 2, 3, ... = Token vorhanden, 0 = Token nicht vorhanden, -1 = Token falsch
 				this->token = scanner->nextToken();
 				if(this->token == NULL){
-					cerr << "Unexpected End of File (EOF)" << endl;
+					cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 				else if(this->token->type == 13){ //Wenn :=
@@ -745,7 +763,7 @@ Statement::Statement(Scanner* scanner) {
 					}
 				}
 				else{	//wenn Token nicht := ist
-					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 			}
@@ -757,7 +775,7 @@ Statement::Statement(Scanner* scanner) {
 		else if(this->token->type == 8 && this->token->symTab->ttype == 4 /*write*/){	//Wenn write
 			this->token = scanner->nextToken();
 			if(this->token == NULL){
-				cerr << "Unexpected End of File (EOF)" << endl;
+				cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 			else if(this->token->type == '('){ //Wenn (
@@ -765,14 +783,14 @@ Statement::Statement(Scanner* scanner) {
 				if(this->exp->status >= 1){	//Wenn EXP vorhanden
 					this->token = scanner->nextToken();
 					if(this->token == NULL){
-						cerr << "Unexpected End of File (EOF)" << endl;
+						cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 						throw -1;
 					}
 					else if(this->token->type == ')'){	//Wenn )
 						this->status = 2;
 					}
 					else{	//Wenn ) nicht vorhanden
-						cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+						cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 						throw -1;
 					}
 				}
@@ -781,14 +799,14 @@ Statement::Statement(Scanner* scanner) {
 				}
 			}
 			else{	//Wenn ( nicht vorhanden
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 		}
 		else if(this->token->type == 8 && token->symTab->ttype == 5 /*read*/){	//Wenn identifier und der ist read vorhanden
 			this->token = scanner->nextToken();
 			if(this->token == NULL){
-				cerr << "Unexpected End of File (EOF)" << endl;
+				cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 			else if (this->token->type == '('){	//Wenn ( vorhanden
@@ -805,14 +823,14 @@ Statement::Statement(Scanner* scanner) {
 					if(this->index->status >= 0){	//Wenn INDEX vorhanden oder leer hole neues Token
 						this->token = scanner->nextToken();
 						if(this->token == NULL){
-							cerr << "Unexpected End of File (EOF)" << endl;
+							cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 							throw -1;
 						}
 						else if(this->token->type == ')'){	//Wenn ) vorhanden
 							this->status = 3;
 						}
 						else{	//Wenn ) nicht vorhanden
-							cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+							cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 							throw -1;
 						}
 					}
@@ -822,12 +840,12 @@ Statement::Statement(Scanner* scanner) {
 
 				}
 				else{	//Wenn identifier nicht vorhanden
-					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 			}
 			else{	//Wenn ( nicht vorhanden
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 		}
@@ -836,14 +854,14 @@ Statement::Statement(Scanner* scanner) {
 			if(this->statements->status >= 0){	//Wenn STATEMENTS vorhanden oder leer
 				this->token = scanner->nextToken();
 				if(this->token == NULL){
-					cerr << "Unexpected End of File (EOF)" << endl;
+					cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 				else if(this->token->type == '}'){	//Wenn } vorhanden
 					this->status = 4;
 				}
 				else{	//Wenn } nicht vorhanden
-					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 			}
@@ -854,7 +872,7 @@ Statement::Statement(Scanner* scanner) {
 		else if(this->token->type == 8 && token->symTab->ttype == 2 /*IF*/){	//Wenn if vorhanden
 			this->token = scanner->nextToken();
 			if(this->token == NULL){
-				cerr << "Unexpected End of File (EOF)" << endl;
+				cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 			else if(this->token->type == '('){	//Wenn ( vorhanden
@@ -862,7 +880,7 @@ Statement::Statement(Scanner* scanner) {
 				if(this->exp->status >= 1){	//Wenn EXP vorhanden
 					this->token = scanner->nextToken();
 					if(this->token == NULL){
-						cerr << "Unexpected End of File (EOF)" << endl;
+						cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 						throw -1;
 					}
 					else if(this->token->type == ')'){	//Wenn ) vorhanden
@@ -870,7 +888,7 @@ Statement::Statement(Scanner* scanner) {
 						if(this->statement->status >= 1){	//Wenn STATEMENT vorhanden
 							this->token = scanner->nextToken();
 							if(this->token == NULL){
-								cerr << "Unexpected End of File (EOF)" << endl;
+								cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 								throw -1;
 							}
 							else if(this->token->type == 8 && this->token->symTab->ttype == 6 /*else*/){ //Wenn Token = identifier und ist else vorhanden
@@ -883,7 +901,7 @@ Statement::Statement(Scanner* scanner) {
 								}
 							}
 							else{	//Wenn else nicht vorhanden
-								cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+								cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 								throw -1;
 							}
 						}
@@ -892,7 +910,7 @@ Statement::Statement(Scanner* scanner) {
 						}
 					}
 					else{	//Wenn ) nicht vorhanden
-						cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+						cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 						throw -1;
 					}
 				}
@@ -901,14 +919,14 @@ Statement::Statement(Scanner* scanner) {
 				}
 			}
 			else{	//Wenn ( nicht vorhanden
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 		}
 		else if(this->token->type == 8 && token->symTab->ttype == 1 /*while*/){	//Wenn Token ist identifier und ist while vorhanden
 			this->token = scanner->nextToken();
 			if(this->token == NULL){
-				cerr << "Unexpected End of File (EOF)" << endl;
+				cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 			else if(this->token->type == '('){	//Wenn ( vorhanden
@@ -916,7 +934,7 @@ Statement::Statement(Scanner* scanner) {
 				if(this->exp->status >= 1){	//Wenn EXP vorhanden
 					this->token = scanner->nextToken();
 					if(this->token == NULL){
-						cerr << "Unexpected End of File (EOF)" << endl;
+						cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 						throw -1;
 					}
 					else if(this->token->type == ')'){	//Wenn ) vorhanden
@@ -929,7 +947,7 @@ Statement::Statement(Scanner* scanner) {
 						}
 					}
 					else{	//Wenn ) nicht vorhanden
-						cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+						cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 						throw -1;
 					}
 				}
@@ -938,7 +956,7 @@ Statement::Statement(Scanner* scanner) {
 				}
 			}
 			else{	//Wenn ( nicht vorhanden
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 		}
@@ -948,7 +966,7 @@ Statement::Statement(Scanner* scanner) {
 				scanner->ungetToken(this->token);
 			}
 			else{
-				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+				cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 				throw -1;
 			}
 		}
@@ -983,7 +1001,7 @@ Exp2::Exp2(Scanner* scanner) {
 	try{
 		this->token = scanner->nextToken();
 		if(this->token == NULL){
-			cerr << "Unexpected End of File (EOF)" << endl;
+			cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 			throw -1;
 		}
 		else if(this->token->type == '('){	//Wenn ( vorhanden
@@ -991,14 +1009,14 @@ Exp2::Exp2(Scanner* scanner) {
 			if(this->exp->status >= 1){	//Wenn EXP vorhanden
 				this->token = scanner->nextToken();
 				if(this->token == NULL){
-					cerr << "Unexpected End of File (EOF)" << endl;
+					cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 				else if(this->token->type == ')'){	//Wenn ) vorhanden
 					this->status = 1;
 				}
 				else{	//Wenn ) nicht vorhanden
-					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 			}
@@ -1049,7 +1067,7 @@ Exp2::Exp2(Scanner* scanner) {
 			}
 		}
 		else{	//Wenn kein passendes Beginnertoken für EXP2
-			cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+			cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 			throw -1;
 		}
 	}
@@ -1062,7 +1080,7 @@ Index::Index(Scanner* scanner){
 	try{
 		this->token = scanner->nextToken();
 		if(this->token == NULL){
-			cerr << "Unexpected End of File (EOF)" << endl;
+			cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 			throw -1;
 		}
 		else if(this->token->type == '['){	//Wenn [ vorhanden
@@ -1070,14 +1088,14 @@ Index::Index(Scanner* scanner){
 			if(this->exp->status == 1){	//Wenn EXP vorhanden
 				this->token = scanner->nextToken();
 				if(this->token == NULL){
-					cerr << "Unexpected End of File (EOF)" << endl;
+					cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 				else if(this->token->type == ']'){	//Wenn ] vorhanden
 					this->status = 1;
 				}
 				else{	//Wenn ] nicht vorhanden
-					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl;
+					cerr << "Unexpected token in line:" << this->token->line << " column: " << this->token->column << " " << this->token->type << endl << "Stop"; exit(-1);
 					throw -1;
 				}
 			}
@@ -1124,7 +1142,7 @@ Op::Op(Scanner* scanner) {
 	try{
 		this->token = scanner->nextToken();
 		if(this->token == NULL){
-			cerr << "Unexpected End of File (EOF)" << endl;
+			cerr << "Unexpected End of File (EOF)" << endl << "Stop"; exit(-1);
 			throw -1;
 		}
 		else if(Op::isOperand(this->token)){	//Wenn Operand vorhanden
