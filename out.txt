@@ -1,0 +1,11 @@
+DS $a 1
+LC 7
+LC 5
+DIV
+LA $a
+STR
+LA $a
+LV
+PRI
+NOP
+STP

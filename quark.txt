@@ -1,27 +1,5 @@
-int[111] limit;
-int current;
-int temp;
-int[1] output;
-int oldOutput;
+int a ;
 
-current := 0;
-oldOutput := -1;
-read(limit[100])ass;
+a := 7:5;
 
-while (current < limit[100])
-{
-	temp := (current * 10) : limit[100];
-	output[0] := 1;
-	while (temp > 0)
-	{
-		output[0] := output[0] * 10;
-		temp := temp + -1;
-	};
-	if (!(output[0] = oldOutput))
-	{
-		write(output[0]);
-		oldOutput := output[0];
-	}
-	else {};
-	current := current + 1;
-};
+write(a);

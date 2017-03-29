@@ -114,7 +114,7 @@ Statement::~Statement(){
 	if (this->status)
 		delete statements;
 	if (this->status)
-		delete statement;
+		delete statement;:
 }
 
 Exp::~Exp(){
@@ -280,13 +280,13 @@ void Parser::makeCodeExp2(Exp2* exp2){
 		makeCodeExp(exp2->exp);
 	}else if(exp2->status == 2){// 8 = identifier
 		fs<<"LA " << "$" << exp2->inhalt<<endl;
-		makeCodeIndex(exp2->index);
+		makeCodeIndex(exp2->index);:
 		fs<<"LV"<<endl;
 	}else if(exp2->status == 3){// 9 = integer
 		fs<<"LC " <<atoi(exp2->inhalt)<<endl;
 	}else if(exp2->status == 4){
 		fs<<"LC "<< 0<<endl;
-		makeCodeExp2(exp2->exp2);
+		makeCodeExp2(exp2-:>exp2);
 		fs<<"SUB"<<endl;
 	}else if(exp2->status == 5){
 		makeCodeExp2(exp2->exp2);
@@ -314,7 +314,7 @@ void Parser::makeCodeOp(Op* op){
 	else if(op->token->type == Star){
 		fs<<"MUL"<<endl;
 	}
-	else if(op->token->type == ':'){
+	else if(op->token->type == DoubleDot){
 		fs<<"DIV"<<endl;
 	}
 	else if(op->token->type == '<'){
